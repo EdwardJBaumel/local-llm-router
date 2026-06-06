@@ -92,29 +92,48 @@ def _add_hint_arg(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_mode_arg(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--mode",
+        choices=["agent", "chat"],
+        help="agent → complex slot; chat → complex_alt when configured on preset",
+    )
+
+
 def _cmd_stacks(args: argparse.Namespace) -> int:
     if args.profile:
         try:
+            from local_llm_router.model_registry import normalize_deployment_profile
+            from local_llm_router.presets import RECOMMENDED_STACKS
+
+            profile_name = normalize_deployment_profile(args.profile)
+            stack = RECOMMENDED_STACKS[profile_name]
             models = recommended_models(args.profile, quant=args.quant)
-            tiers = assign_tiers(models)
+            tiers = assign_recommended_tiers(args.profile, quant=args.quant)
         except ValueError as exc:
             print(f"Error: {exc}")
             return 1
         if args.json:
             payload = {
-                "profile": args.profile,
+                "profile": profile_name,
                 "quant": args.quant or "default",
                 "models": models,
                 "tiers": describe_tiers(tiers),
             }
+            if stack.tier_slots:
+                payload["tier_slots"] = stack.tier_slots
             return _emit_json(payload)
-        print(f"Recommended stack for {args.profile}:")
+        print(f"Recommended stack for {profile_name}:")
         if args.quant:
             print(f"  quant: {args.quant}")
         print("  models:", ",".join(models))
         print("  tiers:")
         for key, value in describe_tiers(tiers).items():
             print(f"    {key}: {value or '-'}")
+        if stack.tier_slots:
+            print("  tier_slots:")
+            for key, value in stack.tier_slots.items():
+                print(f"    {key}: {value}")
         return 0
 
     if args.json:
@@ -124,6 +143,16 @@ def _cmd_stacks(args: argparse.Namespace) -> int:
                     "profile": item.profile,
                     "models": list(item.models),
                     "description": item.description,
+                    **(
+                        {
+                            "tier_slots": item.tier_slots,
+                            "tiers": describe_tiers(
+                                assign_recommended_tiers(item.profile, quant=args.quant)
+                            ),
+                        }
+                        if item.tier_slots
+                        else {}
+                    ),
                 }
                 for item in list_recommended_stacks()
             ]
@@ -228,6 +257,8 @@ def _cmd_doctor(args: argparse.Namespace) -> int:
         print(f"  SIMPLE:    {tiers.simple}")
         print(f"  MEDIUM:    {tiers.medium}")
         print(f"  COMPLEX:   {tiers.complex}")
+        if tiers.complex_alt:
+            print(f"  COMPLEX_ALT: {tiers.complex_alt}  (mode=chat)")
         print(f"  REASONING: {tiers.reasoning}")
         if tiers.code:
             print(f"  CODE:      {tiers.code}")
@@ -387,7 +418,7 @@ def _cmd_explain(args: argparse.Namespace) -> int:
         session_info = describe_session()
         warnings = list(session.warnings)
 
-    decision = explain_route(args.prompt, tiers, hint=args.hint)
+    decision = explain_route(args.prompt, tiers, hint=args.hint, mode=args.mode)
     payload = {
         "ready": True,
         "decision": decision.to_dict(),
@@ -410,11 +441,36 @@ def _cmd_route(args: argparse.Namespace) -> int:
     if getattr(args, "explain", False):
         return _cmd_explain(args)
 
+    models = _parse_model_names(args.models)
+    if models is None and args.profile:
+        from local_llm_router.routing import route_prompt
+        from local_llm_router.session import configure
+
+        try:
+            session = configure(profile=args.profile, quant=args.quant)
+        except ValueError as exc:
+            if args.json:
+                return _emit_json({"ready": False, "error": str(exc)})
+            print(f"Error: {exc}")
+            return 1
+        tier, model = route_prompt(
+            args.prompt,
+            session.tiers,
+            hint=args.hint,
+            mode=args.mode,
+        )
+        payload = {"ready": True, "tier": tier.value, "model": model}
+        if args.json:
+            return _emit_json(payload)
+        print(f"Routed to {model} ({tier.value})")
+        return 0
+
     result = route_prompt_json(
         args.prompt,
         base_url=args.base_url,
-        model_names=_parse_model_names(args.models),
+        model_names=models,
         hint=args.hint,
+        mode=args.mode,
     )
     payload = asdict(result)
     if args.json:
@@ -595,6 +651,7 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Print routing decision trace (uses configure/profile when --models omitted)",
     )
+    _add_mode_arg(route_parser)
     route_parser.set_defaults(handler=_cmd_route)
 
     explain_parser = subparsers.add_parser(
@@ -610,6 +667,7 @@ def main(argv: list[str] | None = None) -> int:
         "--models",
         help="Comma-separated model list (power user — bypasses preset discovery)",
     )
+    _add_mode_arg(explain_parser)
     explain_parser.set_defaults(handler=_cmd_explain)
 
     ask_parser = subparsers.add_parser("ask", help="Route a prompt and generate via Ollama")
@@ -636,8 +694,8 @@ def main(argv: list[str] | None = None) -> int:
     compare_parser.add_argument("--timeout", type=int, default=90, help="Ollama timeout in seconds")
     compare_parser.add_argument(
         "--models",
-        default="gemma4:e4b,qwen3:8b,qwen3:14b",
-        help="Comma-separated model stack (default: Gemma simple + Qwen mid/complex)",
+        default="gemma4:e4b,qwen3.5:9b,qwen3:14b,qwen2.5-coder:7b,deepseek-r1:8b",
+        help="Comma-separated model stack (default: 12 GB preset spine)",
     )
     compare_parser.set_defaults(handler=_cmd_compare)
 
@@ -649,7 +707,7 @@ def main(argv: list[str] | None = None) -> int:
     benchmark_parser.add_argument("--markdown", action="store_true", help="Print markdown table")
     benchmark_parser.add_argument(
         "--models",
-        help="Comma-separated model names (default qwen3:4b,qwen3:8b,qwen3:14b,qwen3:30b-a3b)",
+        help="Comma-separated model names (default: gemma4:e4b,qwen3.5:9b,qwen3:14b,deepseek-r1:8b,qwen2.5-coder:7b)",
     )
     benchmark_parser.set_defaults(handler=_cmd_benchmark)
 

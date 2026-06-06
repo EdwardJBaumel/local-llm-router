@@ -53,6 +53,7 @@ def route_prompt_json(
     config_path: str | None = None,
     only_vram_ok: bool = True,
     hint: str | None = None,
+    mode: str | None = None,
 ) -> RouteResult:
     try:
         names, _warning = _resolve_model_names(
@@ -64,7 +65,7 @@ def route_prompt_json(
         if not names:
             return RouteResult(tier="", model="", ready=False, error="No models available")
         tiers = assign_tiers(names)
-        tier, model = route_prompt(prompt, tiers, hint=hint)
+        tier, model = route_prompt(prompt, tiers, hint=hint, mode=mode)
         return RouteResult(tier=tier.value, model=model, ready=True)
     except Exception as exc:
         return RouteResult(tier="", model="", ready=False, error=str(exc))
