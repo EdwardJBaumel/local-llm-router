@@ -52,4 +52,4 @@ git remote -v                   # origin → local-llm-router.git only
 
 Link between README footers when helpful. Never merge codebases or imply a monorepo product story.
 
-See also: [`SECURITY.md`](SECURITY.md) — what must not be committed.
+See also: [`security.md`](security.md) — what must not be committed.

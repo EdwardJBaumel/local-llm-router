@@ -155,7 +155,7 @@ def run_tour(
     print("  stack profiles")
     print("  stack route --prompt \"design webhook retries\" --json --models " + ",".join(model_names))
     print("  python examples/agent_runner/run.py")
-    print(f"  Docs: {REPO_ROOT / 'docs' / 'DATACENTER.md'}")
+    print(f"  Docs: {REPO_ROOT / 'docs' / 'datacenter.md'}")
     return 0
 
 

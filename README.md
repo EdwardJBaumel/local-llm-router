@@ -40,7 +40,7 @@ Check your stack before routing:
 llm-router doctor --check-stack --vram-gb 16 --quant qat
 ```
 
-**Integration guide:** [`docs/FOR_APP_AUTHORS.md`](docs/FOR_APP_AUTHORS.md) · [`docs/INTEGRATION.md`](docs/INTEGRATION.md)
+**Integration guide:** [`docs/for-app-authors.md`](docs/for-app-authors.md) · [`docs/integration.md`](docs/integration.md)
 
 ## What it does
 
@@ -63,7 +63,7 @@ local_llm_router.configure(vram_gb=16, quant="qat")
 | --- | --- |
 | ≤8 / 12 / 16 / 24 / 32 GB | `workstation_8gb` … `workstation_32gb` |
 
-`quant=` is **not** per-prompt routing — it tells local-llm-router which pull format you use so VRAM filters and stack suggestions stay honest (QAT vs default Ollama Q4). Details: [`docs/LOCAL_MODELS.md`](docs/LOCAL_MODELS.md).
+`quant=` is **not** per-prompt routing — it tells local-llm-router which pull format you use so VRAM filters and stack suggestions stay honest (QAT vs default Ollama Q4). Details: [`docs/local-models.md`](docs/local-models.md).
 
 ## What it is not
 
@@ -92,7 +92,7 @@ pytest
 llm-router setup --profile 12gb --dry-run
 ```
 
-Docs: [`docs/PUBLISHING.md`](docs/PUBLISHING.md) · [`docs/SECURITY.md`](docs/SECURITY.md) · [`docs/BACKLOG.md`](docs/BACKLOG.md)
+Docs: [`docs/publishing.md`](docs/publishing.md) · [`docs/security.md`](docs/security.md) · [`docs/backlog.md`](docs/backlog.md)
 
 ## Related
 

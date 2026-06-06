@@ -2,7 +2,7 @@
 
 Shows how to wire local-llm-router into a **multi-step agent loop**: one routing call before each LLM step.
 
-Full integration guide: [`docs/INTEGRATION.md`](../../docs/INTEGRATION.md)
+Full integration guide: [`docs/integration.md`](../../docs/integration.md)
 
 ## See all four API levels (dry run)
 

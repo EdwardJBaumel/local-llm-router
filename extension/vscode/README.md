@@ -1,4 +1,4 @@
-# Local LLM Router — VS Code / Cursor companion (optional demo)
+﻿# Local LLM Router — VS Code / Cursor companion (optional demo)
 
 **Not the product.** This is a thin Quick Ask panel so professionals can try routing visually. The product is the Python library (`route_prompt`, `assign_tiers`) for agent-loop builders — see the [root README](../../README.md).
 
@@ -42,4 +42,4 @@ Press F5 in VS Code to launch Extension Development Host.
 
 Extension spawns: `python -m local_llm_router ask --prompt "..." --json --base-url ...`
 
-See root README and `docs/USER_STORIES.md`.
+See root README and `docs/user-stories.md`.

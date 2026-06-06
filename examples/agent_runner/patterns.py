@@ -4,7 +4,7 @@ Run from repo root::
 
     python examples/agent_runner/patterns.py
 
-See also: docs/INTEGRATION.md
+See also: docs/integration.md
 """
 
 from __future__ import annotations

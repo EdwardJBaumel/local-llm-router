@@ -170,5 +170,5 @@ Sources: [Google Q4_0 collection](https://huggingface.co/collections/google/gemm
 ## See also
 
 - [`../config/models.example.json`](../config/models.example.json) — full template
-- [`DATACENTER.md`](DATACENTER.md) — fleet / dual-GPU
+- [`datacenter.md`](datacenter.md) — fleet / dual-GPU
 - [`../examples/quickstart/README.md`](../examples/quickstart/README.md) — hands-on tour

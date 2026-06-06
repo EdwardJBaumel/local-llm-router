@@ -1,4 +1,4 @@
-"""Quantization assumptions for VRAM sizing — not per-prompt routing.
+﻿"""Quantization assumptions for VRAM sizing — not per-prompt routing.
 
 Ollama tags (``gemma4:e4b``) do not encode quant. ``quant=`` tells local-llm-router which
 pull format you use so VRAM filters and QAT-aware stack suggestions stay honest.
@@ -128,7 +128,7 @@ def pull_guidance_lines(quant_mode: str | None) -> list[str]:
     if mode == "qat":
         return [
             "Gemma 4 QAT: prefer Unsloth UD-Q4_K_XL GGUF over naive Google Q4_0 for llama.cpp/Ollama imports.",
-            "Collections: google/gemma-4-qat-q4_0, unsloth/gemma-4-qat — see docs/LOCAL_MODELS.md",
+            "Collections: google/gemma-4-qat-q4_0, unsloth/gemma-4-qat — see docs/local-models.md",
         ]
     if mode == "qat_mobile":
         return [

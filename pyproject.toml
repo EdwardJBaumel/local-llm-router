@@ -23,7 +23,7 @@ dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/edwardjbaumel/local-llm-router"
-Documentation = "https://github.com/edwardjbaumel/local-llm-router/blob/main/docs/FOR_APP_AUTHORS.md"
+Documentation = "https://github.com/edwardjbaumel/local-llm-router/blob/main/docs/for-app-authors.md"
 Repository = "https://github.com/edwardjbaumel/local-llm-router"
 Issues = "https://github.com/edwardjbaumel/local-llm-router/issues"
 

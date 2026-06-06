@@ -1,4 +1,4 @@
-# Security and privacy (contributors)
+﻿# Security and privacy (contributors)
 
 What **must not** go on GitHub in this repo.
 
@@ -10,7 +10,7 @@ What **must not** go on GitHub in this repo.
 | **`.pypirc`** with real passwords | Same |
 | **`.env`** files | Often hold keys |
 | **`local-llm-router.models.json`** at repo root | Local machine config (use `config/models.example.json` instead) |
-| **`OLLAMA_STACK.md`** | Personal paths and install notes — keep local only (gitignored) |
+| **`ollama-stack.md`** | Personal paths and install notes — keep local only (gitignored) |
 | **`dist/`**, **`build/`** | Build artifacts, not source |
 
 ## Safe to commit (public by design)
@@ -32,7 +32,7 @@ rg -n "zonka|C:\\\\Users\\\\[^/]+\\\\dev" . --glob "!dist" --glob "!.git"
 rg -n "pypi-Ag[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{10,}" .
 
 # Local config not ignored?
-git check-ignore -v local-llm-router.models.json OLLAMA_STACK.md dist
+git check-ignore -v local-llm-router.models.json ollama-stack.md dist
 ```
 
 All sensitive local files should show as ignored.

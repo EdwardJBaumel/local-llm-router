@@ -17,7 +17,7 @@ ollama pull qwen3:30b-a3b
 
 You can use fewer models; edit `local-llm-router.models.json` or pass `--models` on the CLI.
 
-**Not a Qwen shop.** Gemma, Llama, Phi, DeepSeek, Codellama and custom tags work the same way — see [`../../docs/LOCAL_MODELS.md`](../../docs/LOCAL_MODELS.md) for family notes and example ladders per VRAM preset.
+**Not a Qwen shop.** Gemma, Llama, Phi, DeepSeek, Codellama and custom tags work the same way — see [`../../docs/local-models.md`](../../docs/local-models.md) for family notes and example ladders per VRAM preset.
 
 Alternative pulls worth trying:
 

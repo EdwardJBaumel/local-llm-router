@@ -1,4 +1,4 @@
-__pycache__/
+﻿__pycache__/
 *.py[cod]
 .pytest_cache/
 *.egg-info/
@@ -22,7 +22,7 @@ local-llm-router.models.json
 !examples/quickstart/local-llm-router.models.json
 
 # Personal machine notes (keep locally only)
-OLLAMA_STACK.md
+ollama-stack.md
 PRIVATE*.md
 
 extension/vscode/node_modules/

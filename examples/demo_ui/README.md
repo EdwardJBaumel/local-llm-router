@@ -90,4 +90,4 @@ python examples/demo_ui/server.py --port 8765 --base-url http://127.0.0.1:11434
 
 ## Related backlog
 
-Local model freshness / staleness checks are tracked in [`../../docs/BACKLOG.md`](../../docs/BACKLOG.md) — not part of this demo yet.
+Local model freshness / staleness checks are tracked in [`../../docs/backlog.md`](../../docs/backlog.md) — not part of this demo yet.

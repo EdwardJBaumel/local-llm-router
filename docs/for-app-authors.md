@@ -143,7 +143,7 @@ tier, model = decision.tier, decision.model
 
 ## Next steps
 
-- Full integration patterns: [`INTEGRATION.md`](INTEGRATION.md)
+- Full integration patterns: [`integration.md`](integration.md)
 - Copy-paste demo: [`examples/agent_runner/patterns.py`](../examples/agent_runner/patterns.py)
 - Compare POC (why not always use the biggest model?): [`examples/poc_compare/`](../examples/poc_compare/)
-- Publish / version: [`PUBLISHING.md`](PUBLISHING.md)
+- Publish / version: [`publishing.md`](publishing.md)

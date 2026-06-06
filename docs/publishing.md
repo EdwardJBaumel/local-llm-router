@@ -11,7 +11,7 @@ Repo: [github.com/edwardjbaumel/local-llm-router](https://github.com/edwardjbaum
 - [ ] **Tests green:** `pip install -e ".[dev]" && pytest`
 - [ ] **Version bumped** in `pyproject.toml` (semver: `0.2.0` → `0.2.1` for fixes, `0.3.0` for features)
 - [ ] **README** opens with the 5-line `configure` + `route` example
-- [ ] **`docs/FOR_APP_AUTHORS.md`** linked from README (app author entry point)
+- [ ] **`docs/for-app-authors.md`** linked from README (app author entry point)
 - [ ] **Git tag** matches version: `git tag v0.2.0`
 - [ ] **GitHub repo public** and `main` pushed
 
@@ -116,7 +116,7 @@ pip show local-llm-router
 
 - [ ] GitHub **Release** for tag `v0.2.0` with notes (agent runner, compare POC, `configure`/`route` API)
 - [ ] README install block says `pip install local-llm-router` first, `pip install -e .` for contributors
-- [ ] PyPI project description links to `FOR_APP_AUTHORS.md` on GitHub
+- [ ] PyPI project description links to `for-app-authors.md` on GitHub
 - [ ] Optional: add topics on GitHub (`ollama`, `llm`, `local-first`, `agents`, `routing`)
 
 ---
@@ -128,7 +128,7 @@ Publishing alone is not marketing. Point authors to:
 | Channel | Action |
 | --- | --- |
 | **PyPI** | `pip install local-llm-router` |
-| **GitHub README** | Hero example + link to [`FOR_APP_AUTHORS.md`](FOR_APP_AUTHORS.md) |
+| **GitHub README** | Hero example + link to [`for-app-authors.md`](for-app-authors.md) |
 | **Your POC demos** | Agent runner + compare — “why routing beats one model” |
 | **Integrations doc** | LiteLLM, CLI JSON for non-Python |
 | **Related projects** | Footer link from Local Recruiting Ops / your local LLM POC when you add mixed-step chat |

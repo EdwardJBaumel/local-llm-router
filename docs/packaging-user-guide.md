@@ -54,9 +54,9 @@ Then `local_llm_router.configure()` with no args picks them up.
 
 | Doc | For |
 | --- | --- |
-| [`FOR_APP_AUTHORS.md`](FOR_APP_AUTHORS.md) | When to use it, hints, examples |
-| [`INTEGRATION.md`](INTEGRATION.md) | Session vs explicit API |
-| [`LOCAL_MODELS.md`](LOCAL_MODELS.md) | VRAM presets and model tables |
+| [`for-app-authors.md`](for-app-authors.md) | When to use it, hints, examples |
+| [`integration.md`](integration.md) | Session vs explicit API |
+| [`local-models.md`](local-models.md) | VRAM presets and model tables |
 
 ## Publishing your own package (different topic)
 
@@ -67,4 +67,4 @@ If **you** are building a Python package to ship on PyPI, that is your project's
 dependencies = ["local-llm-router>=0.2.0"]
 ```
 
-Maintainers publishing **local-llm-router itself**: see [`PUBLISHING.md`](PUBLISHING.md).
+Maintainers publishing **local-llm-router itself**: see [`publishing.md`](publishing.md).

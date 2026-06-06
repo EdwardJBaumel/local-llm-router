@@ -225,4 +225,4 @@ Design discussion: [Odysseus issue #3073](https://github.com/pewdiepie-archdaemo
 - Run chat/tools/history (your client)
 - Guarantee benchmark optimality (presets are starting points)
 
-See also: [`LOCAL_MODELS.md`](LOCAL_MODELS.md), [`examples/agent_runner/run.py`](../examples/agent_runner/run.py).
+See also: [`local-models.md`](local-models.md), [`examples/agent_runner/run.py`](../examples/agent_runner/run.py).

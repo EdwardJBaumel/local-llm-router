@@ -36,6 +36,17 @@ Use lowercase snake_case nouns by responsibility:
 - Keep `cli.py` as a consumer, not a source of business logic
 - Keep optional integrations (Ollama, emitters) out of core logic paths
 
+## Documentation filenames
+
+Use **kebab-case** for markdown under `docs/` (e.g. `for-app-authors.md`, `local-models.md`, `ollama-stack.md`).
+
+Exceptions (repo-root conventions only):
+
+- `README.md`, `LICENSE`, `CHANGELOG.md` — standard upstream casing
+- `AGENTS.md` — Cursor agent instructions (hub repos only)
+
+Do not use `SCREAMING_SNAKE_CASE.md` for new docs.
+
 ## Monorepo layout
 
 - Python library: `src/local_llm_router/`
