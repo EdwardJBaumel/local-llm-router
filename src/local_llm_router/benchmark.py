@@ -16,7 +16,7 @@ class BenchmarkPrompt:
     note: str
 
 
-DEFAULT_MODELS = list(DEFAULT_POC_STACK) + ["qwen3:30b-a3b"]
+DEFAULT_MODELS = list(DEFAULT_POC_STACK) + ["deepseek-r1:8b", "qwen2.5-coder:7b"]
 
 BENCHMARK_PROMPTS: tuple[BenchmarkPrompt, ...] = (
     BenchmarkPrompt("b01", "what is caching?", "definition"),

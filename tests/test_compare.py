@@ -47,7 +47,7 @@ def test_stack_compare_cli(capsys):
     output = capsys.readouterr().out
     assert exit_code == 0
     assert "local-llm-router vs always-largest" in output
-    assert "3/5 steps avoided largest" in output
+    assert "4/5 steps avoided largest" in output
     assert "gemma4:e4b" in output or "qwen3:8b" in output
 
 
@@ -56,7 +56,7 @@ def test_stack_compare_json(capsys):
     payload = json.loads(capsys.readouterr().out.strip())
     assert exit_code == 0
     assert len(payload["rows"]) == 5
-    assert payload["summary"]["steps_avoided_largest"] == 3
+    assert payload["summary"]["steps_avoided_largest"] == 4
 
 
 def test_format_ollama_error_404():
