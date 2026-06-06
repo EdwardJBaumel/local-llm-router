@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from split_stack.poc_models import DEFAULT_POC_STACK
-from split_stack.routing import route_prompt
-from split_stack.tiering import assign_tiers
+from local_llm_router.poc_models import DEFAULT_POC_STACK
+from local_llm_router.routing import route_prompt
+from local_llm_router.tiering import assign_tiers
 
 
 @dataclass(frozen=True)

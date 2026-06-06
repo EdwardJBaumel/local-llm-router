@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from split_stack.models import TierMap
-from split_stack.session import (
+from local_llm_router.models import TierMap
+from local_llm_router.session import (
     configure,
     profile_for_vram_gb,
     reset_session_for_tests,
@@ -14,8 +14,8 @@ from split_stack.session import (
 @pytest.fixture(autouse=True)
 def _clean_session(monkeypatch):
     reset_session_for_tests()
-    monkeypatch.delenv("SPLIT_STACK_VRAM_GB", raising=False)
-    monkeypatch.delenv("SPLIT_STACK_PROFILE", raising=False)
+    monkeypatch.delenv("local_llm_router_VRAM_GB", raising=False)
+    monkeypatch.delenv("local_llm_router_PROFILE", raising=False)
     yield
     reset_session_for_tests()
 
@@ -36,7 +36,7 @@ def test_configure_with_explicit_models():
 
 
 def test_configure_from_env(monkeypatch):
-    monkeypatch.setenv("SPLIT_STACK_VRAM_GB", "16")
+    monkeypatch.setenv("local_llm_router_VRAM_GB", "16")
     configure(models=["gemma4:e4b", "qwen3:8b", "qwen3:14b"])
     tier, model = route("compare options", hint="explain")
     assert model == "qwen3:8b"

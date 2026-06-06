@@ -1,4 +1,4 @@
-from split_stack.discovery import audit_model_folders, remove_duplicate_manifests
+from local_llm_router.discovery import audit_model_folders, remove_duplicate_manifests
 
 
 def test_audit_finds_no_duplicates_after_cleanup():

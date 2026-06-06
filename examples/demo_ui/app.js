@@ -123,7 +123,7 @@ function renderCompare(data) {
   const summary = data.summary;
   summaryStrip.classList.remove("hidden");
   summaryStrip.innerHTML = `
-    <strong>split-stack:</strong> ${summary.routed_models_used} models,
+    <strong>local-llm-router:</strong> ${summary.routed_models_used} models,
     ${summary.steps_avoided_largest}/${summary.total_steps} steps avoided largest
     &nbsp;|&nbsp;
     <strong>baseline:</strong> always ${summary.baseline_model}
@@ -581,7 +581,7 @@ async function boot() {
   await reloadAll();
   if (!serverOk) {
     inventoryNote.textContent =
-      "Restart: stop the old server, then run examples/demo_ui/start.ps1 from split-stack.";
+      "Restart: stop the old server, then run examples/demo_ui/start.ps1 from local-llm-router.";
   }
 }
 

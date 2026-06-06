@@ -1,6 +1,6 @@
 import json
 
-from split_stack.cli import main
+from local_llm_router.cli import main
 
 
 def test_stack_benchmark_markdown(capsys):

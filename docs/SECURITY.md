@@ -9,7 +9,7 @@ What **must not** go on GitHub in this repo.
 | **PyPI / GitHub API tokens** | Full account access if leaked |
 | **`.pypirc`** with real passwords | Same |
 | **`.env`** files | Often hold keys |
-| **`split-stack.models.json`** at repo root | Local machine config (use `config/models.example.json` instead) |
+| **`local-llm-router.models.json`** at repo root | Local machine config (use `config/models.example.json` instead) |
 | **`OLLAMA_STACK.md`** | Personal paths and install notes — keep local only (gitignored) |
 | **`dist/`**, **`build/`** | Build artifacts, not source |
 
@@ -20,7 +20,7 @@ What **must not** go on GitHub in this repo.
 | **`edwardjbaumel` GitHub URLs** | Public repo links |
 | **Author name in `pyproject.toml`** | Standard OSS attribution |
 | **Example paths like `~/.ollama/models`** | Generic placeholders |
-| **`examples/quickstart/split-stack.models.json`** | Generic template, no secrets |
+| **`examples/quickstart/local-llm-router.models.json`** | Generic template, no secrets |
 
 ## Before every push
 
@@ -32,7 +32,7 @@ rg -n "zonka|C:\\\\Users\\\\[^/]+\\\\dev" . --glob "!dist" --glob "!.git"
 rg -n "pypi-Ag[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{10,}" .
 
 # Local config not ignored?
-git check-ignore -v split-stack.models.json OLLAMA_STACK.md dist
+git check-ignore -v local-llm-router.models.json OLLAMA_STACK.md dist
 ```
 
 All sensitive local files should show as ignored.
@@ -45,4 +45,4 @@ All sensitive local files should show as ignored.
 
 ## Reporting
 
-Open a GitHub Security advisory on [split-stack](https://github.com/edwardjbaumel/split-stack/security) for vulnerabilities in the library itself.
+Open a GitHub Security advisory on [local-llm-router](https://github.com/edwardjbaumel/local-llm-router/security) for vulnerabilities in the library itself.

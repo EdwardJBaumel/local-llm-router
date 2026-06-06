@@ -6,22 +6,22 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
-from split_stack.advice import stack_recommendation
-from split_stack.benchmark import format_markdown_table, routed_model_mix, run_benchmark
-from split_stack.compare import CompareRunError, format_compare_text, run_compare
-from split_stack.discovery import discover_models
-from split_stack.local_models import assign_tiers_from_local, list_local_models
-from split_stack.model_registry import (
+from local_llm_router.advice import stack_recommendation
+from local_llm_router.benchmark import format_markdown_table, routed_model_mix, run_benchmark
+from local_llm_router.compare import CompareRunError, format_compare_text, run_compare
+from local_llm_router.discovery import discover_models
+from local_llm_router.local_models import assign_tiers_from_local, list_local_models
+from local_llm_router.model_registry import (
     config_search_paths,
     list_deployment_profiles,
     load_registry,
 )
-from split_stack.ollama_generate import ask_prompt_json, route_prompt_json
-from split_stack.requirements import UsageProfile, list_usage_profiles, usage_requirements
-from split_stack.presets import assign_recommended_tiers, list_recommended_stacks, recommended_models
-from split_stack.setup_wizard import format_setup_summary, plan_setup, run_setup
-from split_stack.stack_health import check_stack_health, format_stack_health
-from split_stack.tiering import assign_tiers, describe_tiers
+from local_llm_router.ollama_generate import ask_prompt_json, route_prompt_json
+from local_llm_router.requirements import UsageProfile, list_usage_profiles, usage_requirements
+from local_llm_router.presets import assign_recommended_tiers, list_recommended_stacks, recommended_models
+from local_llm_router.setup_wizard import format_setup_summary, plan_setup, run_setup
+from local_llm_router.stack_health import check_stack_health, format_stack_health
+from local_llm_router.tiering import assign_tiers, describe_tiers
 
 
 def _print_requirements(profile: UsageProfile, *, check: bool) -> None:
@@ -237,7 +237,7 @@ def _cmd_doctor(args: argparse.Namespace) -> int:
         if config_paths:
             print(f"\nUsing config: {config_paths[0]}")
         else:
-            print("\nUsing built-in model table. Copy config/models.example.json to split-stack.models.json")
+            print("\nUsing built-in model table. Copy config/models.example.json to local-llm-router.models.json")
     except Exception as exc:
         print(f"\nOllama discovery skipped: {exc}")
     return 0
@@ -299,12 +299,12 @@ def _cmd_models(args: argparse.Namespace) -> int:
     if active:
         print(f"\nConfig: {active}")
     else:
-        print("\nConfig: built-in table (copy config/models.example.json → split-stack.models.json)")
+        print("\nConfig: built-in table (copy config/models.example.json → local-llm-router.models.json)")
     return 0
 
 
 def _cmd_tips(args: argparse.Namespace) -> int:
-    from split_stack.startup_tips import model_recommendation_report
+    from local_llm_router.startup_tips import model_recommendation_report
 
     lines = model_recommendation_report(
         profile=args.profile,
@@ -365,10 +365,10 @@ def _cmd_setup(args: argparse.Namespace) -> int:
 
 
 def _cmd_explain(args: argparse.Namespace) -> int:
-    from split_stack.routing import explain_route
-    from split_stack.session import configure, describe_session
-    from split_stack.tiering import assign_tiers
-    from split_stack.validation import validate_tier_map
+    from local_llm_router.routing import explain_route
+    from local_llm_router.session import configure, describe_session
+    from local_llm_router.tiering import assign_tiers
+    from local_llm_router.validation import validate_tier_map
 
     models = _parse_model_names(args.models)
     if models:
@@ -536,14 +536,14 @@ def _add_ollama_args(parser: argparse.ArgumentParser) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="stack", description="split-stack helper CLI")
+    parser = argparse.ArgumentParser(prog="stack", description="local-llm-router helper CLI")
     subparsers = parser.add_subparsers(dest="command")
 
     doctor_parser = subparsers.add_parser("doctor", help="Show stack advice and optional Ollama tiers")
     _add_profile_arg(doctor_parser)
     doctor_parser.add_argument(
         "--config",
-        help="Path to split-stack.models.json (or set SPLIT_STACK_MODELS_CONFIG)",
+        help="Path to local-llm-router.models.json (or set LOCAL_LLM_ROUTER_MODELS_CONFIG)",
     )
     _add_quant_arg(doctor_parser)
     doctor_parser.add_argument(
@@ -620,7 +620,7 @@ def main(argv: list[str] | None = None) -> int:
 
     compare_parser = subparsers.add_parser(
         "compare",
-        help="Compare split-stack routing vs always-largest on 5-step agent loop",
+        help="Compare local-llm-router routing vs always-largest on 5-step agent loop",
     )
     compare_parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     compare_parser.add_argument(
@@ -660,7 +660,7 @@ def main(argv: list[str] | None = None) -> int:
     models_parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     models_parser.add_argument(
         "--config",
-        help="Path to split-stack.models.json (or set SPLIT_STACK_MODELS_CONFIG)",
+        help="Path to local-llm-router.models.json (or set LOCAL_LLM_ROUTER_MODELS_CONFIG)",
     )
     models_parser.add_argument(
         "--base-url",
@@ -717,7 +717,7 @@ def main(argv: list[str] | None = None) -> int:
 
     setup_parser = subparsers.add_parser(
         "setup",
-        help="Pick a VRAM preset, consent to Ollama pulls, write split-stack.models.json",
+        help="Pick a VRAM preset, consent to Ollama pulls, write local-llm-router.models.json",
     )
     setup_parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     _add_profile_arg(setup_parser)
@@ -733,7 +733,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     setup_parser.add_argument(
         "--config",
-        help="Write config to this path (default ./split-stack.models.json)",
+        help="Write config to this path (default ./local-llm-router.models.json)",
     )
     setup_parser.add_argument(
         "--base-url",

@@ -1,6 +1,6 @@
 # Datacenter deployment
 
-split-stack is builder-first: it picks a model **name** from your catalog. Your gateway or inference service generates text. Workstation users get VRAM presets; datacenter teams bring a custom catalog.
+local-llm-router is builder-first: it picks a model **name** from your catalog. Your gateway or inference service generates text. Workstation users get VRAM presets; datacenter teams bring a custom catalog.
 
 ## When to use `datacenter`
 
@@ -17,7 +17,7 @@ VRAM hints in config are optional labels only. Nothing is filtered out.
 Copy the template:
 
 ```bash
-cp config/models.datacenter.example.json split-stack.models.json
+cp config/models.datacenter.example.json local-llm-router.models.json
 ```
 
 Minimum shape:
@@ -50,7 +50,7 @@ stack models --json
 
 ## Wiring inference
 
-split-stack does not call your datacenter API directly. Typical pattern:
+local-llm-router does not call your datacenter API directly. Typical pattern:
 
 1. `stack route --prompt "..." --json --models prod-small,prod-large,...`
 2. Pass `model` from JSON into LiteLLM, an OpenAI-compatible client, or your gateway

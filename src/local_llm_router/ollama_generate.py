@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from split_stack.discovery import discover_models
-from split_stack.local_models import list_local_models
-from split_stack.ollama_errors import format_ollama_error
-from split_stack.routing import route_prompt
-from split_stack.tiering import assign_tiers
+from local_llm_router.discovery import discover_models
+from local_llm_router.local_models import list_local_models
+from local_llm_router.ollama_errors import format_ollama_error
+from local_llm_router.routing import route_prompt
+from local_llm_router.tiering import assign_tiers
 
 
 @dataclass(frozen=True)
@@ -81,7 +81,7 @@ def generate_text(
         import requests
     except ImportError as exc:
         raise RuntimeError(
-            "generate_text requires optional dependency: pip install split-stack[ollama]"
+            "generate_text requires optional dependency: pip install local-llm-router[ollama]"
         ) from exc
 
     try:

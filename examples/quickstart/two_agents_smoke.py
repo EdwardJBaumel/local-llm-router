@@ -1,8 +1,8 @@
-"""Smoke demo: two agent loops sharing split-stack routing (dry-run, no Ollama required)."""
+"""Smoke demo: two agent loops sharing local-llm-router routing (dry-run, no Ollama required)."""
 
 from __future__ import annotations
 
-from split_stack import assign_recommended_tiers, route_prompt
+from local_llm_router import assign_recommended_tiers, route_prompt
 
 STACK_12 = assign_recommended_tiers("workstation_12gb")
 STACK_16 = assign_recommended_tiers("workstation_16gb")
@@ -29,7 +29,7 @@ def run_agent(name: str, steps: tuple[tuple[str, str, str], ...], tiers) -> None
 
 
 def main() -> int:
-    print("split-stack two-agent smoke (routing only)")
+    print("local-llm-router two-agent smoke (routing only)")
     print("Stack A (research, 12 GB):", "gemma4:e4b / qwen3:8b / qwen3:14b / deepseek-r1:8b")
     print("Stack B (code, 16 GB): adds deepseek-coder:6.7b for code hints")
 

@@ -5,7 +5,7 @@ This file captures core product and architecture decisions for portfolio context
 ## 2026-05-25 - Chosen direction: library-first
 
 ### Decision
-Build `split-stack` as an importable Python library first, with CLI and docs as wrappers.
+Build `local-llm-router` as an importable Python library first, with CLI and docs as wrappers.
 
 ### Why
 - Existing router products already compete on full proxy UX (CodeRouter, 9Router, kani, LiteLLM ecosystem).
@@ -54,7 +54,7 @@ MIT licence and no hosted billing product in v0.x.
 ### Clarification
 "Free" means this tooling is free. Upstream inference may still cost money (Cursor seat, cloud API keys, compute, electricity).
 
-## 2026-05-25 - Split-stack policy stance
+## 2026-05-25 - local-llm-router policy stance
 
 ### Decision
 Default guidance keeps Cursor native for agentic coding, with routing library usage for scripts and tools.
@@ -71,7 +71,7 @@ Ship a concrete example app that routes everyday work prompts (quick Q&A, design
 ### Why
 - Demonstrates the product in the shortest path from install to value
 - Shows transparent prompt-to-model routing decisions per request
-- Matches the "split stack" policy: local routing for direct questions, Cursor native for agentic coding
+- Matches the "Local LLM Router" policy: local routing for direct questions, Cursor native for agentic coding
 
 ### Tradeoff
 - Example is intentionally local-first and does not represent cloud multi-provider routing
@@ -79,7 +79,7 @@ Ship a concrete example app that routes everyday work prompts (quick Q&A, design
 ## 2026-05-25 - Monorepo: library + optional VS Code demo
 
 ### Decision
-Ship one repo with Python library (`src/split_stack/`) and an optional pull-based VS Code extension (`extension/vscode/`).
+Ship one repo with Python library (`src/local_llm_router/`) and an optional pull-based VS Code extension (`extension/vscode/`).
 
 ### Why
 - Library is the product; extension proves routing without duplicating logic
@@ -101,7 +101,7 @@ Extension offers command-palette Quick Ask only. No chat interception, no "this 
 
 ### Implementation consequence
 - No hooks into Cursor/VS Code chat APIs
-- Panel opens only when user runs `Split Stack: Quick Ask`
+- Panel opens only when user runs `Local LLM Router: Quick Ask`
 - Same extension package runs in VS Code and Cursor (VS Code fork compatibility)
 
 ## 2026-05-26 - Builder-first pivot (brutal scope)

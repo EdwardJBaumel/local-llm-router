@@ -1,5 +1,5 @@
-from split_stack.presets import assign_recommended_tiers, recommended_models
-from split_stack.tiering import assign_tiers
+from local_llm_router.presets import assign_recommended_tiers, recommended_models
+from local_llm_router.tiering import assign_tiers
 
 
 def test_recommended_models_12gb():

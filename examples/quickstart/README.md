@@ -15,7 +15,7 @@ ollama pull qwen3:14b
 ollama pull qwen3:30b-a3b
 ```
 
-You can use fewer models; edit `split-stack.models.json` or pass `--models` on the CLI.
+You can use fewer models; edit `local-llm-router.models.json` or pass `--models` on the CLI.
 
 **Not a Qwen shop.** Gemma, Llama, Phi, DeepSeek, Codellama and custom tags work the same way — see [`../../docs/LOCAL_MODELS.md`](../../docs/LOCAL_MODELS.md) for family notes and example ladders per VRAM preset.
 
@@ -55,12 +55,12 @@ chmod +x examples/quickstart/try_it.sh
 ### 1. Install
 
 ```bash
-cd split-stack
+cd local-llm-router
 pip install -e ".[ollama]"
 stack setup --profile workstation_12gb
 ```
 
-`stack setup` asks which preset to use (if omitted), shows missing models, **asks consent before download**, then writes `split-stack.models.json`.
+`stack setup` asks which preset to use (if omitted), shows missing models, **asks consent before download**, then writes `local-llm-router.models.json`.
 
 Non-interactive:
 
@@ -72,12 +72,12 @@ stack setup --profile 12gb --yes
 
 ```powershell
 # PowerShell
-$env:SPLIT_STACK_MODELS_CONFIG = "examples\quickstart\split-stack.models.json"
+$env:LOCAL_LLM_ROUTER_MODELS_CONFIG = "examples\quickstart\local-llm-router.models.json"
 ```
 
 ```bash
 # bash
-export SPLIT_STACK_MODELS_CONFIG=examples/quickstart/split-stack.models.json
+export LOCAL_LLM_ROUTER_MODELS_CONFIG=examples/quickstart/local-llm-router.models.json
 ```
 
 Edit `deployment_profile` in that file to match your GPU:
@@ -131,7 +131,7 @@ python examples/quickstart/mini_app.py --prompt "design webhook retries"
 ## What you are testing
 
 ```text
-split-stack.models.json  →  deployment_profile + model weights
+local-llm-router.models.json  →  deployment_profile + model weights
         ↓
 assign_tiers(models)     →  simple / medium / complex / reasoning slots
         ↓
@@ -140,13 +140,13 @@ route_prompt(text, tiers) →  pick model name (no network)
 your Ollama / gateway     →  generate text
 ```
 
-This example keeps config in `examples/quickstart/` so you do not touch your home directory until you are ready to ship your own `split-stack.models.json`.
+This example keeps config in `examples/quickstart/` so you do not touch your home directory until you are ready to ship your own `local-llm-router.models.json`.
 
 ## Copy into your own project
 
 When satisfied:
 
-1. Copy `split-stack.models.json` to your app repo root (or `~/.config/split-stack/models.json`).
+1. Copy `local-llm-router.models.json` to your app repo root (or `~/.config/local-llm-router/models.json`).
 2. Copy the integration snippet from [`../agent_runner/run.py`](../agent_runner/run.py).
 3. See [`../../docs/integrations/litellm.md`](../../docs/integrations/litellm.md) for gateway wiring.
 

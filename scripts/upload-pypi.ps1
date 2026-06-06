@@ -57,9 +57,9 @@ Write-Host "Uploading to $repoName..." -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Success on $repoName." -ForegroundColor Green
 if ($TestPyPI) {
-    Write-Host "Verify: pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ split-stack"
+    Write-Host "Verify: pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ local-llm-router"
 } else {
-    Write-Host "Verify: pip install split-stack"
+    Write-Host "Verify: pip install local-llm-router"
 }
 
 # Clear token from this session

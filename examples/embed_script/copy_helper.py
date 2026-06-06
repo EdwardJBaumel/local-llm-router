@@ -1,4 +1,4 @@
-"""Embed split-stack in a small script (copy, outlines, quick research).
+"""Embed local-llm-router in a small script (copy, outlines, quick research).
 
 Usage:
     python copy_helper.py "suggest 5 hero taglines for a portfolio site"
@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from split_stack import UsageProfile, assign_tiers, discover_models, route_prompt, usage_requirements
+from local_llm_router import UsageProfile, assign_tiers, discover_models, route_prompt, usage_requirements
 
 
 def _check_ready() -> bool:
@@ -54,7 +54,7 @@ def ask_local(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Minimal split-stack embed for side-project scripts")
+    parser = argparse.ArgumentParser(description="Minimal local-llm-router embed for side-project scripts")
     parser.add_argument("prompt", help="Question or copy request")
     parser.add_argument("--base-url", default="http://127.0.0.1:11434")
     args = parser.parse_args()
@@ -63,7 +63,7 @@ def main() -> int:
         return 1
 
     tier, model, text = ask_local(args.prompt, base_url=args.base_url)
-    print(f"[split-stack] tier={tier} model={model}\n")
+    print(f"[local-llm-router] tier={tier} model={model}\n")
     print(text)
     return 0
 

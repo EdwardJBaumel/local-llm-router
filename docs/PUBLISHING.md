@@ -1,8 +1,8 @@
-# Publishing split-stack to PyPI
+# Publishing local-llm-router to PyPI
 
-Checklist to ship `pip install split-stack` so other local LLM apps can depend on it.
+Checklist to ship `pip install local-llm-router` so other local LLM apps can depend on it.
 
-Repo: [github.com/edwardjbaumel/split-stack](https://github.com/edwardjbaumel/split-stack)
+Repo: [github.com/edwardjbaumel/local-llm-router](https://github.com/edwardjbaumel/local-llm-router)
 
 ---
 
@@ -22,7 +22,7 @@ Repo: [github.com/edwardjbaumel/split-stack](https://github.com/edwardjbaumel/sp
 No env-var quoting — script prompts for token:
 
 ```powershell
-cd C:\Users\zonka\dev\projects\split-stack
+cd C:\Users\zonka\dev\projects\local-llm-router
 .\scripts\upload-pypi.ps1 -TestPyPI    # token from test.pypi.org
 .\scripts\upload-pypi.ps1              # token from pypi.org
 ```
@@ -57,7 +57,7 @@ pip install build twine
 ```
 
 3. **API token** (recommended over password):
-   - PyPI → Account settings → API tokens → scope to project `split-stack`
+   - PyPI → Account settings → API tokens → scope to project `local-llm-router`
    - Save token; use `__token__` as username when uploading
 
 4. Optional: `~/.pypirc` or env vars for twine (**never commit** real tokens):
@@ -82,8 +82,8 @@ twine upload --repository testpypi dist/*
 Install from TestPyPI in a fresh venv:
 
 ```bash
-pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ split-stack
-python -c "import split_stack; print(split_stack.__version__ if hasattr(split_stack,'__version__') else 'ok')"
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ local-llm-router
+python -c "import local_llm_router; print(local_llm_router.__version__ if hasattr(local_llm_router,'__version__') else 'ok')"
 stack route --prompt "what is JWT?" --hint lookup --json --models gemma4:e4b,qwen3:8b,qwen3:14b
 ```
 
@@ -106,8 +106,8 @@ twine upload dist/*
 Verify:
 
 ```bash
-pip install split-stack
-pip show split-stack
+pip install local-llm-router
+pip show local-llm-router
 ```
 
 ---
@@ -115,7 +115,7 @@ pip show split-stack
 ## After publish
 
 - [ ] GitHub **Release** for tag `v0.2.0` with notes (agent runner, compare POC, `configure`/`route` API)
-- [ ] README install block says `pip install split-stack` first, `pip install -e .` for contributors
+- [ ] README install block says `pip install local-llm-router` first, `pip install -e .` for contributors
 - [ ] PyPI project description links to `FOR_APP_AUTHORS.md` on GitHub
 - [ ] Optional: add topics on GitHub (`ollama`, `llm`, `local-first`, `agents`, `routing`)
 
@@ -127,7 +127,7 @@ Publishing alone is not marketing. Point authors to:
 
 | Channel | Action |
 | --- | --- |
-| **PyPI** | `pip install split-stack` |
+| **PyPI** | `pip install local-llm-router` |
 | **GitHub README** | Hero example + link to [`FOR_APP_AUTHORS.md`](FOR_APP_AUTHORS.md) |
 | **Your POC demos** | Agent runner + compare — “why routing beats one model” |
 | **Integrations doc** | LiteLLM, CLI JSON for non-Python |
@@ -151,7 +151,7 @@ After bump: commit, tag `vX.Y.Z`, push, build, upload.
 
 ## Optional: add `__version__` to package
 
-Readers often expect `split_stack.__version__`. Add to `src/split_stack/__init__.py`:
+Readers often expect `local_llm_router.__version__`. Add to `src/local_llm_router/__init__.py`:
 
 ```python
 __version__ = "0.2.0"
@@ -166,6 +166,6 @@ Keep in sync with `pyproject.toml` (or read from importlib.metadata at runtime).
 | Problem | Fix |
 | --- | --- |
 | `twine upload` 403 | Token scope or wrong username (`__token__`) |
-| Package name taken | PyPI name `split-stack` — verify availability before first upload |
+| Package name taken | PyPI name `local-llm-router` — verify availability before first upload |
 | `stack` command missing after install | `[project.scripts]` in `pyproject.toml` — reinstall |
-| Old version cached | `pip install --upgrade split-stack` |
+| Old version cached | `pip install --upgrade local-llm-router` |

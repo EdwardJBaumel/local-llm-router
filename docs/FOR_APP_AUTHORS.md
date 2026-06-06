@@ -1,6 +1,6 @@
 # For app authors
 
-**split-stack is a model picker for local LLM apps.** It does not run inference, chat, or tools. Your app still calls Ollama (or LM Studio, llama.cpp, etc.). split-stack only answers:
+**local-llm-router is a model picker for local LLM apps.** It does not run inference, chat, or tools. Your app still calls Ollama (or LM Studio, llama.cpp, etc.). local-llm-router only answers:
 
 > *Which model tag should this step use?*
 
@@ -17,26 +17,26 @@ Use it when your app runs **more than one local model** and step difficulty vari
 | Mixed ops UI — quick check vs deep analysis | Cloud-only API with one model |
 | You have 2–3 Ollama models and hate always using the biggest | You never change models |
 
-**Shorthand use:** you are not sure how hard the next step will be, but you *do* know (or can guess) the **kind** of step — fact lookup, explain, design, code, reason. Pass that as `hint=` and split-stack maps it to a tier and model name.
+**Shorthand use:** you are not sure how hard the next step will be, but you *do* know (or can guess) the **kind** of step — fact lookup, explain, design, code, reason. Pass that as `hint=` and local-llm-router maps it to a tier and model name.
 
 ---
 
 ## Install
 
 ```bash
-pip install split-stack
+pip install local-llm-router
 ```
 
 Optional Ollama helpers (`stack ask`, disk discovery):
 
 ```bash
-pip install "split-stack[ollama]"
+pip install "local-llm-router[ollama]"
 ```
 
 From GitHub before PyPI:
 
 ```bash
-pip install git+https://github.com/edwardjbaumel/split-stack.git
+pip install git+https://github.com/edwardjbaumel/local-llm-router.git
 ```
 
 ---
@@ -46,15 +46,15 @@ pip install git+https://github.com/edwardjbaumel/split-stack.git
 **Once** at app startup:
 
 ```python
-import split_stack
+import local_llm_router
 
-split_stack.configure(vram_gb=16)  # your GPU budget in GB
+local_llm_router.configure(vram_gb=16)  # your GPU budget in GB
 ```
 
 **Before every LLM call:**
 
 ```python
-tier, model = split_stack.route(prompt, hint="lookup")
+tier, model = local_llm_router.route(prompt, hint="lookup")
 response = your_client.generate(model=model, prompt=prompt)
 ```
 
@@ -68,7 +68,7 @@ response = your_client.generate(model=model, prompt=prompt)
 | `code` | Write or fix code |
 | `reason` | Step-by-step proof, scoring |
 
-Omit `hint` only for demos — split-stack guesses from keywords (less reliable in production).
+Omit `hint` only for demos — local-llm-router guesses from keywords (less reliable in production).
 
 ---
 
@@ -87,11 +87,11 @@ HINT_FOR_JOB = {
 }
 
 hint = HINT_FOR_JOB[job_type]
-tier, model = split_stack.route(prompt, hint=hint)
+tier, model = local_llm_router.route(prompt, hint=hint)
 ```
 
 **2. You truly don't know**  
-Use `hint=None` for a heuristic guess, or classify first (rules / small model / user pick), then call `route()` with the hint. split-stack is the **model** shorthand, not the **intent** classifier.
+Use `hint=None` for a heuristic guess, or classify first (rules / small model / user pick), then call `route()` with the hint. local-llm-router is the **model** shorthand, not the **intent** classifier.
 
 ---
 
@@ -100,7 +100,7 @@ Use `hint=None` for a heuristic guess, or classify first (rules / small model / 
 Presets are a starting point. Production apps should pin tags:
 
 ```python
-split_stack.configure(
+local_llm_router.configure(
     vram_gb=16,
     quant="qat",
     models=["gemma4:e4b", "qwen3:8b", "qwen3:14b"],
@@ -125,14 +125,14 @@ Same routing logic; your app reads `tier` and `model` from stdout.
 ## Logging (optional)
 
 ```python
-decision = split_stack.explain(prompt, hint=hint)
-log.info({"event": "split_stack.route", **decision.to_dict()})
+decision = local_llm_router.explain(prompt, hint=hint)
+log.info({"event": "local_llm_router.route", **decision.to_dict()})
 tier, model = decision.tier, decision.model
 ```
 
 ---
 
-## What split-stack is not
+## What local-llm-router is not
 
 - Not an Ollama plugin — Ollama just receives the model name you pass
 - Not an agent framework — no memory, tools, or orchestration

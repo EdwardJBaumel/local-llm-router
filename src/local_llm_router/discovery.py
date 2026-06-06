@@ -27,7 +27,7 @@ def default_models_dir() -> Path | None:
     if _CONFIGURED_MODELS_DIR is not None:
         candidates.append(_CONFIGURED_MODELS_DIR)
 
-    for key in ("SPLIT_STACK_OLLAMA_MODELS", "OLLAMA_MODELS"):
+    for key in ("local_llm_router_OLLAMA_MODELS", "OLLAMA_MODELS"):
         raw = os.environ.get(key, "").strip()
         if raw:
             candidates.append(Path(raw))
@@ -89,9 +89,9 @@ def manifest_search_paths(extra_root: str | Path | None = None) -> list[Path]:
     if env_models:
         add(Path(env_models))
 
-    split_stack_models = os.environ.get("SPLIT_STACK_OLLAMA_MODELS", "").strip()
-    if split_stack_models:
-        add(Path(split_stack_models))
+    local_llm_router_models = os.environ.get("local_llm_router_OLLAMA_MODELS", "").strip()
+    if local_llm_router_models:
+        add(Path(local_llm_router_models))
 
     if _CONFIGURED_MODELS_DIR is not None:
         add(_CONFIGURED_MODELS_DIR)
@@ -138,7 +138,7 @@ def discover_models(base_url: str = "http://127.0.0.1:11434") -> list[str]:
         import requests
     except ImportError as exc:
         raise RuntimeError(
-            "discover_models requires optional dependency: pip install split-stack[ollama]"
+            "discover_models requires optional dependency: pip install local-llm-router[ollama]"
         ) from exc
 
     url = f"{base_url.rstrip('/')}/api/tags"
@@ -155,7 +155,7 @@ def _suggest_stack_from_pool(model_names: list[str], *, count: int = 3) -> list[
     if len(model_names) <= count:
         return list(model_names)
 
-    from split_stack.model_registry import load_registry, model_weight
+    from local_llm_router.model_registry import load_registry, model_weight
 
     registry = load_registry()
     ranked = sorted(model_names, key=lambda name: model_weight(name, registry))

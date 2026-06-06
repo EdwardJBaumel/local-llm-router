@@ -1,4 +1,4 @@
-"""Local browser demo for split-stack routing and compare POC."""
+"""Local browser demo for local-llm-router routing and compare POC."""
 
 from __future__ import annotations
 
@@ -15,14 +15,14 @@ _PROJECT_SRC = Path(__file__).resolve().parents[2] / "src"
 if _PROJECT_SRC.is_dir() and str(_PROJECT_SRC) not in sys.path:
     sys.path.insert(0, str(_PROJECT_SRC))
 
-from split_stack.discovery import configure_models_dir, default_models_dir
-from split_stack.poc_models import (
+from local_llm_router.discovery import configure_models_dir, default_models_dir
+from local_llm_router.poc_models import (
     DEFAULT_POC_STACK,
     list_quant_options,
     list_vram_options,
     stack_payload,
 )
-from split_stack.session import profile_for_vram_gb
+from local_llm_router.session import profile_for_vram_gb
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_PORT = 8765
@@ -112,7 +112,7 @@ def _compare_payload(
     live: bool,
     base_url: str,
 ) -> dict:
-    from split_stack.compare import CompareRunError, run_compare
+    from local_llm_router.compare import CompareRunError, run_compare
 
     try:
         report = run_compare(
@@ -140,8 +140,8 @@ def _route_payload(
     hint: str | None,
     base_url: str,
 ) -> dict:
-    from split_stack.hints import list_hints
-    from split_stack.ollama_generate import route_prompt_json
+    from local_llm_router.hints import list_hints
+    from local_llm_router.ollama_generate import route_prompt_json
 
     result = route_prompt_json(
         prompt,
@@ -161,7 +161,7 @@ def _route_payload(
 
 
 def _models_payload(*, base_url: str, models_dir: str | None = None) -> dict:
-    from split_stack.discovery import list_model_inventory
+    from local_llm_router.discovery import list_model_inventory
 
     inventory = list_model_inventory(base_url=base_url, manifests_root=models_dir)
     detected = default_models_dir()
@@ -196,12 +196,12 @@ def _guide_payload(
     vram_gb: int = 16,
     quant: str = "qat",
 ) -> dict:
-    from split_stack.model_guide import build_model_guide
-    from split_stack.poc_models import available_model_pool
+    from local_llm_router.model_guide import build_model_guide
+    from local_llm_router.poc_models import available_model_pool
 
     pool, note = available_model_pool(base_url=base_url, source=source)
     if not pool and models_dir:
-        from split_stack.discovery import discover_models_from_disk
+        from local_llm_router.discovery import discover_models_from_disk
 
         pool = discover_models_from_disk(manifests_root=models_dir)
     profile = profile_for_vram_gb(vram_gb)
@@ -227,7 +227,7 @@ def _guide_payload(
 
 
 def _hints_payload() -> dict:
-    from split_stack.hints import LEGACY_HINT_ALIASES, list_hints
+    from local_llm_router.hints import LEGACY_HINT_ALIASES, list_hints
 
     return {
         "hints": list(list_hints()),
@@ -283,7 +283,7 @@ class DemoHandler(BaseHTTPRequestHandler):
 
         if parsed.path == "/api/community":
             profile = query.get("profile", ["workstation_12gb"])[0]
-            from split_stack.community_picks import build_community_guide
+            from local_llm_router.community_picks import build_community_guide
 
             _json_response(self, {"ready": True, **build_community_guide(profile=profile)})
             return
@@ -394,7 +394,7 @@ class DemoHandler(BaseHTTPRequestHandler):
 def main() -> int:
     import argparse
 
-    parser = argparse.ArgumentParser(description="split-stack visual browser demo")
+    parser = argparse.ArgumentParser(description="local-llm-router visual browser demo")
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--base-url", default="http://127.0.0.1:11434")
@@ -412,18 +412,18 @@ def main() -> int:
 
     if models_dir:
         configure_models_dir(models_dir)
-        os.environ.setdefault("SPLIT_STACK_OLLAMA_MODELS", models_dir)
+        os.environ.setdefault("local_llm_router_OLLAMA_MODELS", models_dir)
 
     DemoHandler.base_url = args.base_url
     DemoHandler.models_dir = models_dir
     server = ThreadingHTTPServer((args.host, args.port), DemoHandler)
     url = f"http://{args.host}:{args.port}"
-    print(f"split-stack demo UI at {url}")
+    print(f"local-llm-router demo UI at {url}")
     print(f"Default stack: {DEFAULT_MODELS}")
     if models_dir:
         print(f"Models dir: {models_dir}")
     else:
-        print("Models dir: not found — set --models-dir or SPLIT_STACK_OLLAMA_MODELS")
+        print("Models dir: not found — set --models-dir or local_llm_router_OLLAMA_MODELS")
     print("Press Ctrl+C to stop.")
     try:
         server.serve_forever()

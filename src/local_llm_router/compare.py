@@ -1,14 +1,14 @@
-"""Side-by-side compare: split-stack routing vs always-largest baseline."""
+"""Side-by-side compare: local-llm-router routing vs always-largest baseline."""
 
 from __future__ import annotations
 
 import time
 from dataclasses import dataclass
 
-from split_stack.model_registry import load_registry, model_weight
-from split_stack.poc_models import DEFAULT_POC_STACK
-from split_stack.routing import route_prompt
-from split_stack.tiering import assign_tiers
+from local_llm_router.model_registry import load_registry, model_weight
+from local_llm_router.poc_models import DEFAULT_POC_STACK
+from local_llm_router.routing import route_prompt
+from local_llm_router.tiering import assign_tiers
 
 DEFAULT_MODELS = list(DEFAULT_POC_STACK)
 
@@ -105,7 +105,7 @@ def run_compare(
 
     generate_text = None
     if not dry_run:
-        from split_stack.ollama_generate import generate_text as _generate_text
+        from local_llm_router.ollama_generate import generate_text as _generate_text
 
         generate_text = _generate_text
 
@@ -159,7 +159,7 @@ def run_compare(
 def format_compare_text(report: CompareReport) -> str:
     baseline = report.summary.baseline_model
     lines = [
-        f"Compare: split-stack vs always-largest ({baseline})",
+        f"Compare: local-llm-router vs always-largest ({baseline})",
         "",
         f"{'step':<18} | {'routed tier':<12} | {'routed model':<12} | baseline model",
     ]
@@ -178,7 +178,7 @@ def format_compare_text(report: CompareReport) -> str:
         [
             "",
             "Summary:",
-            f"  split-stack:  {summary.routed_models_used} models used, "
+            f"  local-llm-router:  {summary.routed_models_used} models used, "
             f"{summary.steps_avoided_largest}/{summary.total_steps} steps avoided largest",
             f"  baseline:     {summary.baseline_models_used} model used, "
             f"{summary.total_steps}/{summary.total_steps} on largest",

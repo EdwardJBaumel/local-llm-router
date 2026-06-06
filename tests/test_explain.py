@@ -1,17 +1,17 @@
 import pytest
 
-from split_stack import configure, explain, session_warnings
-from split_stack.routing import explain_route
-from split_stack.session import reset_session_for_tests
-from split_stack.tiering import assign_tiers
-from split_stack.validation import validate_tier_map
+from local_llm_router import configure, explain, session_warnings
+from local_llm_router.routing import explain_route
+from local_llm_router.session import reset_session_for_tests
+from local_llm_router.tiering import assign_tiers
+from local_llm_router.validation import validate_tier_map
 
 
 @pytest.fixture(autouse=True)
 def _clean_session(monkeypatch):
     reset_session_for_tests()
-    monkeypatch.delenv("SPLIT_STACK_VRAM_GB", raising=False)
-    monkeypatch.delenv("SPLIT_STACK_PROFILE", raising=False)
+    monkeypatch.delenv("local_llm_router_VRAM_GB", raising=False)
+    monkeypatch.delenv("local_llm_router_PROFILE", raising=False)
     yield
     reset_session_for_tests()
 

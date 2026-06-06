@@ -1,23 +1,23 @@
-# Using split-stack (pip install guide)
+# Using local-llm-router (pip install guide)
 
-For **app developers** who want `pip install split-stack` — not for publishing to PyPI.
+For **app developers** who want `pip install local-llm-router` — not for publishing to PyPI.
 
 ## Install
 
 ```bash
-pip install split-stack
+pip install local-llm-router
 ```
 
 With Ollama helpers (`stack ask`, model discovery):
 
 ```bash
-pip install "split-stack[ollama]"
+pip install "local-llm-router[ollama]"
 ```
 
 Before PyPI (from GitHub):
 
 ```bash
-pip install git+https://github.com/edwardjbaumel/split-stack.git
+pip install git+https://github.com/edwardjbaumel/local-llm-router.git
 ```
 
 Requires **Python 3.10+**. No GPU required for routing (dry picks only).
@@ -25,7 +25,7 @@ Requires **Python 3.10+**. No GPU required for routing (dry picks only).
 ## Verify
 
 ```bash
-python -c "import split_stack; print(split_stack.__version__)"
+python -c "import local_llm_router; print(local_llm_router.__version__)"
 stack route --prompt "what is JWT?" --hint lookup --json \
   --models gemma4:e4b,qwen3:8b,qwen3:14b
 ```
@@ -33,22 +33,22 @@ stack route --prompt "what is JWT?" --hint lookup --json \
 ## Use in your app (minimum)
 
 ```python
-import split_stack
+import local_llm_router
 
-split_stack.configure(vram_gb=16)
+local_llm_router.configure(vram_gb=16)
 
-tier, model = split_stack.route("what is JWT?", hint="lookup")
+tier, model = local_llm_router.route("what is JWT?", hint="lookup")
 # → then call your Ollama client with model=
 ```
 
 ## Environment variables (optional)
 
 ```bash
-export SPLIT_STACK_VRAM_GB=16
-export SPLIT_STACK_QUANT=qat
+export local_llm_router_VRAM_GB=16
+export local_llm_router_QUANT=qat
 ```
 
-Then `split_stack.configure()` with no args picks them up.
+Then `local_llm_router.configure()` with no args picks them up.
 
 ## Where to go next
 
@@ -60,11 +60,11 @@ Then `split_stack.configure()` with no args picks them up.
 
 ## Publishing your own package (different topic)
 
-If **you** are building a Python package to ship on PyPI, that is your project's packaging — split-stack is just a dependency:
+If **you** are building a Python package to ship on PyPI, that is your project's packaging — local-llm-router is just a dependency:
 
 ```toml
 # pyproject.toml in YOUR project
-dependencies = ["split-stack>=0.2.0"]
+dependencies = ["local-llm-router>=0.2.0"]
 ```
 
-Maintainers publishing **split-stack itself**: see [`PUBLISHING.md`](PUBLISHING.md).
+Maintainers publishing **local-llm-router itself**: see [`PUBLISHING.md`](PUBLISHING.md).

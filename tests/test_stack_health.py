@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from split_stack.discovery import ModelInventory
-from split_stack.stack_health import ModelTagInfo, check_stack_health, format_stack_health
+from local_llm_router.discovery import ModelInventory
+from local_llm_router.stack_health import ModelTagInfo, check_stack_health, format_stack_health
 
 
 def test_check_stack_health_all_present():
@@ -12,9 +12,9 @@ def test_check_stack_health_all_present():
         suggested_stack=("gemma4:e4b", "qwen3:8b", "qwen3:14b"),
         note=None,
     )
-    with patch("split_stack.stack_health.list_model_inventory", return_value=inventory):
+    with patch("local_llm_router.stack_health.list_model_inventory", return_value=inventory):
         with patch(
-            "split_stack.stack_health.audit_model_folders",
+            "local_llm_router.stack_health.audit_model_folders",
             return_value={"duplicate_tags": []},
         ):
             report = check_stack_health(profile="workstation_12gb", quant="default")
@@ -34,9 +34,9 @@ def test_check_stack_health_missing_and_routing_blocked():
         suggested_stack=("qwen3:8b",),
         note=None,
     )
-    with patch("split_stack.stack_health.list_model_inventory", return_value=inventory):
+    with patch("local_llm_router.stack_health.list_model_inventory", return_value=inventory):
         with patch(
-            "split_stack.stack_health.audit_model_folders",
+            "local_llm_router.stack_health.audit_model_folders",
             return_value={"duplicate_tags": []},
         ):
             report = check_stack_health(profile="workstation_12gb", quant="default")
@@ -55,9 +55,9 @@ def test_check_stack_health_duplicate_tags_warn():
         suggested_stack=("gemma4:e4b", "qwen3:8b", "qwen3:14b"),
         note=None,
     )
-    with patch("split_stack.stack_health.list_model_inventory", return_value=inventory):
+    with patch("local_llm_router.stack_health.list_model_inventory", return_value=inventory):
         with patch(
-            "split_stack.stack_health.audit_model_folders",
+            "local_llm_router.stack_health.audit_model_folders",
             return_value={"duplicate_tags": ["qwen3:8b"]},
         ):
             report = check_stack_health(vram_gb=16, quant="qat")
@@ -73,9 +73,9 @@ def test_format_stack_health_includes_routing_line():
         suggested_stack=("qwen3:8b",),
         note="Ollama API unreachable.",
     )
-    with patch("split_stack.stack_health.list_model_inventory", return_value=inventory):
+    with patch("local_llm_router.stack_health.list_model_inventory", return_value=inventory):
         with patch(
-            "split_stack.stack_health.audit_model_folders",
+            "local_llm_router.stack_health.audit_model_folders",
             return_value={"duplicate_tags": []},
         ):
             report = check_stack_health(profile="workstation_12gb")
@@ -100,12 +100,12 @@ def test_quant_mismatch_warns_library_gemma_with_qat_mode():
             quantization_level="Q4_K_M",
         ),
     }
-    with patch("split_stack.stack_health.list_model_inventory", return_value=inventory):
+    with patch("local_llm_router.stack_health.list_model_inventory", return_value=inventory):
         with patch(
-            "split_stack.stack_health.audit_model_folders",
+            "local_llm_router.stack_health.audit_model_folders",
             return_value={"duplicate_tags": []},
         ):
-            with patch("split_stack.stack_health._fetch_ollama_tag_info", return_value=tag_info):
+            with patch("local_llm_router.stack_health._fetch_ollama_tag_info", return_value=tag_info):
                 report = check_stack_health(profile="workstation_12gb", quant="qat")
     codes = {item.code for item in report.findings}
     assert "quant_mismatch" in codes

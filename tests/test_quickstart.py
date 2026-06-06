@@ -5,8 +5,8 @@ from examples.quickstart import mini_app
 
 
 def test_quickstart_tour_dry(capsys, monkeypatch):
-    config = Path(__file__).resolve().parents[1] / "examples" / "quickstart" / "split-stack.models.json"
-    monkeypatch.setenv("SPLIT_STACK_MODELS_CONFIG", str(config))
+    config = Path(__file__).resolve().parents[1] / "examples" / "quickstart" / "local-llm-router.models.json"
+    monkeypatch.setenv("LOCAL_LLM_ROUTER_MODELS_CONFIG", str(config))
     exit_code = mini_app.main(["--tour"])
     captured = capsys.readouterr()
     assert exit_code == 0
@@ -16,8 +16,8 @@ def test_quickstart_tour_dry(capsys, monkeypatch):
 
 
 def test_quickstart_single_prompt(capsys, monkeypatch):
-    config = Path(__file__).resolve().parents[1] / "examples" / "quickstart" / "split-stack.models.json"
-    monkeypatch.setenv("SPLIT_STACK_MODELS_CONFIG", str(config))
+    config = Path(__file__).resolve().parents[1] / "examples" / "quickstart" / "local-llm-router.models.json"
+    monkeypatch.setenv("LOCAL_LLM_ROUTER_MODELS_CONFIG", str(config))
     exit_code = mini_app.main(
         [
             "--prompt",

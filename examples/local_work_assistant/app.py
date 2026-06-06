@@ -3,8 +3,8 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 
-from split_stack import assign_tiers, discover_models, route_prompt
-from split_stack.models import TierMap
+from local_llm_router import assign_tiers, discover_models, route_prompt
+from local_llm_router.models import TierMap
 
 
 @dataclass
@@ -28,7 +28,7 @@ class LocalWorkAssistant:
         try:
             import requests
         except ImportError as exc:
-            raise RuntimeError("This app requires requests. Install with: pip install split-stack[ollama]") from exc
+            raise RuntimeError("This app requires requests. Install with: pip install local-llm-router[ollama]") from exc
 
         response = requests.post(
             f"{self.ollama_base_url}/api/generate",
@@ -74,7 +74,7 @@ def _interactive_mode(assistant: LocalWorkAssistant) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Local work assistant using split-stack routing")
+    parser = argparse.ArgumentParser(description="Local work assistant using local-llm-router routing")
     parser.add_argument("--prompt", type=str, help="Single prompt to run")
     parser.add_argument("--base-url", type=str, default="http://127.0.0.1:11434", help="Ollama base URL")
     parser.add_argument("--timeout", type=int, default=60, help="Request timeout in seconds")

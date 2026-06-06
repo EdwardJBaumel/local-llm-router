@@ -1,6 +1,6 @@
-# Integrating split-stack
+# Integrating local-llm-router
 
-split-stack is a **routing library**: it picks `(tier, model_tag)` before each LLM call. It does not run inference, tools, or memory.
+local-llm-router is a **routing library**: it picks `(tier, model_tag)` before each LLM call. It does not run inference, tools, or memory.
 
 ## One engine, two entry points
 
@@ -11,7 +11,7 @@ Both paths call the same `explain_route()` core. Pick based on who owns the mode
 | **Session (embedded)** | App devs | `configure()` once | `route()` / `explain()` |
 | **Explicit (power user)** | Gateways, tests | `assign_tiers(models)` | `route_prompt()` / `explain_route()` |
 
-**Embedded apps:** import is silent by default. Use `stack tips` in dev, or `SPLIT_STACK_IMPORT_TIPS=on` for one-time stderr tips.
+**Embedded apps:** import is silent by default. Use `stack tips` in dev, or `local_llm_router_IMPORT_TIPS=on` for one-time stderr tips.
 
 ### Progressive disclosure (same session API)
 
@@ -31,39 +31,39 @@ Level 3 is for gateways and unit tests. Levels 0–2 share env vars, warnings, a
 ## Convenient: configure once
 
 ```python
-import split_stack
+import local_llm_router
 
-split_stack.configure(
+local_llm_router.configure(
     vram_gb=16,
     quant="qat",
     models=["gemma4:e4b", "qwen3:8b", "qwen3:14b"],  # explicit list recommended
 )
 
 for step in agent_steps:
-    tier, model = split_stack.route(step.prompt, hint=step.kind)
+    tier, model = local_llm_router.route(step.prompt, hint=step.kind)
     response = your_ollama_client.generate(model=model, prompt=step.prompt)
 ```
 
 Environment (optional):
 
 ```bash
-export SPLIT_STACK_VRAM_GB=16
-export SPLIT_STACK_QUANT=qat
-# export SPLIT_STACK_PROFILE=workstation_16gb
+export local_llm_router_VRAM_GB=16
+export local_llm_router_QUANT=qat
+# export local_llm_router_PROFILE=workstation_16gb
 ```
 
 ### Validate after configure
 
 ```python
-session = split_stack.configure(vram_gb=16, models=[...])
+session = local_llm_router.configure(vram_gb=16, models=[...])
 for warning in session.warnings:
-    logging.warning("split_stack: %s", warning)
+    logging.warning("local_llm_router: %s", warning)
 ```
 
 ### Custom tier ladder (level 2)
 
 ```python
-from split_stack import TierMap, configure, route
+from local_llm_router import TierMap, configure, route
 
 configure(
     vram_gb=16,
@@ -96,7 +96,7 @@ stack explain --prompt "what is JWT?" --hint lookup --profile workstation_16gb -
 ## Power user: explicit tier map
 
 ```python
-from split_stack import assign_tiers, explain_route, route_prompt
+from local_llm_router import assign_tiers, explain_route, route_prompt
 
 tiers = assign_tiers([
     "gemma4:e4b",
@@ -111,7 +111,7 @@ tier, model = decision.tier, decision.model
 # or: tier, model = route_prompt(step.prompt, tiers, hint="code")
 ```
 
-Custom registry: copy `config/models.example.json` → `split-stack.models.json` or set `SPLIT_STACK_MODELS_CONFIG`.
+Custom registry: copy `config/models.example.json` → `local-llm-router.models.json` or set `LOCAL_LLM_ROUTER_MODELS_CONFIG`.
 
 ---
 
@@ -121,7 +121,7 @@ Log once at startup:
 
 ```json
 {
-  "event": "split_stack.session",
+  "event": "local_llm_router.session",
   "profile": "workstation_16gb",
   "quant": "qat",
   "models": ["gemma4:e4b", "qwen3:8b", "qwen3:14b"],
@@ -133,15 +133,15 @@ Log once at startup:
 Log every step:
 
 ```python
-decision = split_stack.explain(step.prompt, hint=step.kind)
-log.info({"event": "split_stack.route", **decision.to_dict()})
+decision = local_llm_router.explain(step.prompt, hint=step.kind)
+log.info({"event": "local_llm_router.route", **decision.to_dict()})
 tier, model = decision.tier, decision.model
 ```
 
 Or minimal:
 
 ```python
-tier, model = split_stack.route(step.prompt, hint=step.kind)
+tier, model = local_llm_router.route(step.prompt, hint=step.kind)
 ```
 
 ---
@@ -175,7 +175,50 @@ python examples/agent_runner/run.py --verbose --vram-gb 16 --quant qat \
 
 ---
 
-## What split-stack does not do
+## Odysseus (optional Auto stack)
+
+[Odysseus](https://github.com/pewdiepie-archdaemon/odysseus) integrates local-llm-router as an **optional** admin feature (`auto_stack_enabled`). When a user picks **Auto stack** in the model picker, the session stores sentinel `__auto_stack__` and routes each LLM call on the **anchor endpoint only** (local Ollama/vLLM).
+
+```mermaid
+sequenceDiagram
+  participant UI as modelPicker
+  participant Chat as chat_stream
+  participant AS as auto_stack_router
+  participant SS as local_llm_router
+  participant LLM as stream_llm
+
+  UI->>Chat: POST session model __auto_stack__
+  Chat->>AS: build_model_pool anchor endpoint
+  AS->>SS: configure + route prompt hint
+  SS-->>AS: tier tag
+  AS->>LLM: resolve_model_on_endpoint tag
+```
+
+**Install (Odysseus side):**
+
+```bash
+pip install -r requirements-optional.txt   # includes local-llm-router[ollama]
+```
+
+**Hook points (upstream PR series):**
+
+| Layer | Module | Role |
+| --- | --- | --- |
+| Lazy import | `src/local_llm_router_runtime.py` | Graceful 503 if missing |
+| Router | `src/auto_stack_router.py` | Pool, `resolve_model_on_endpoint`, hints, stack-only fallbacks |
+| Chat | `routes/chat_routes.py` | Resolve once before `stream_llm_with_fallback`; SSE `model_info` shows resolved tag |
+| Agent | `src/agent_loop.py` | Per-round resolve + recompute `_is_api_model`; SSE `model_resolved` |
+| UI | `static/js/modelPicker.js`, `settings.js` | Toggle, VRAM/quant, Auto stack row |
+
+**Settings keys:** `auto_stack_enabled`, `auto_stack_vram_gb` (0 = hwfit detect), `auto_stack_quant`, `auto_stack_models` (optional override list).
+
+**Non-goals:** Replace teacher escalation, Compare mode, research model, or cloud endpoints.
+
+Design discussion: [Odysseus issue #3073](https://github.com/pewdiepie-archdaemon/odysseus/issues/3073).
+
+---
+
+## What local-llm-router does not do
 
 - Pick quant per prompt (set `quant=` once)
 - Detect GPU automatically (you pass `vram_gb`)

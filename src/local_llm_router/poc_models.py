@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from split_stack.discovery import list_model_inventory
-from split_stack.presets import RECOMMENDED_STACKS, recommended_models
-from split_stack.quantization import QAT_STACK_ADDITIONS, normalize_quant_mode
-from split_stack.session import profile_for_vram_gb
+from local_llm_router.discovery import list_model_inventory
+from local_llm_router.presets import RECOMMENDED_STACKS, recommended_models
+from local_llm_router.quantization import QAT_STACK_ADDITIONS, normalize_quant_mode
+from local_llm_router.session import profile_for_vram_gb
 
 DEFAULT_POC_STACK = ["gemma4:e4b", "qwen3:8b", "qwen3:14b"]
 
@@ -96,7 +96,7 @@ def models_for_preset(
     if preset_id == "qwen_only":
         return ["qwen3:4b", "qwen3:8b", "qwen3:14b"]
     if preset_id == "community_agentic":
-        from split_stack.community_picks import focus_stack, vram_tier_for_profile
+        from local_llm_router.community_picks import focus_stack, vram_tier_for_profile
 
         tier = vram_tier_for_profile(profile or "workstation_12gb")
         focus = focus_stack("agentic", vram_tier=tier)
@@ -135,7 +135,7 @@ def resolve_stack_against_pool(
         return matched, missing, None
 
     if installed:
-        from split_stack.model_registry import load_registry, model_weight
+        from local_llm_router.model_registry import load_registry, model_weight
 
         registry = load_registry()
         ranked = sorted(installed, key=lambda name: model_weight(name, registry))

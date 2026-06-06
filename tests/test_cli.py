@@ -1,7 +1,7 @@
 import json
 from unittest.mock import patch
 
-from split_stack.cli import main
+from local_llm_router.cli import main
 
 
 def test_stack_route_json_with_models(capsys):
@@ -40,9 +40,9 @@ def test_stack_route_json_complex_prompt(capsys):
     assert payload["model"] == "qwen3:14b"
 
 
-@patch("split_stack.ollama_generate.generate_text", return_value="Caching stores copies of data.")
+@patch("local_llm_router.ollama_generate.generate_text", return_value="Caching stores copies of data.")
 @patch(
-    "split_stack.ollama_generate._resolve_model_names",
+    "local_llm_router.ollama_generate._resolve_model_names",
     return_value=(["qwen3:4b", "qwen3:14b"], None),
 )
 def test_stack_ask_json(_mock_resolve, _mock_generate, capsys):
@@ -57,7 +57,7 @@ def test_stack_ask_json(_mock_resolve, _mock_generate, capsys):
 
 def test_stack_ask_json_discovery_error(capsys):
     with patch(
-        "split_stack.ollama_generate._resolve_model_names",
+        "local_llm_router.ollama_generate._resolve_model_names",
         return_value=([], None),
     ):
         exit_code = main(["ask", "--prompt", "what is caching?", "--json"])

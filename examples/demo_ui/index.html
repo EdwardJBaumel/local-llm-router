@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>split-stack demo</title>
+  <title>local-llm-router demo</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <header class="site-header">
-    <h1>split-stack</h1>
+    <h1>local-llm-router</h1>
     <p class="tagline">Pick the right local model for each agent step</p>
-    <p class="note">Demo for the Python library — not a chat app. Install: <code>pip install split-stack</code></p>
+    <p class="note">Demo for the Python library — not a chat app. Install: <code>pip install local-llm-router</code></p>
   </header>
 
   <main class="layout">
@@ -55,7 +55,7 @@
 
     <section class="panel" id="route-section">
       <h2>Try one prompt</h2>
-      <p class="intro">Same call as <code>split_stack.route(prompt, hint=...)</code> in Python.</p>
+      <p class="intro">Same call as <code>local_llm_router.route(prompt, hint=...)</code> in Python.</p>
       <textarea id="prompt-input" rows="2" spellcheck="false">what is caching?</textarea>
       <div class="route-row">
         <label>
@@ -73,7 +73,7 @@
       <div class="panel-head">
         <div>
           <h2>Savings demo</h2>
-          <p class="intro">Five fake agent steps. <strong>Routed</strong> = split-stack picks a model per step. <strong>Baseline</strong> = always your largest model.</p>
+          <p class="intro">Five fake agent steps. <strong>Routed</strong> = local-llm-router picks a model per step. <strong>Baseline</strong> = always your largest model.</p>
         </div>
         <div class="panel-actions">
           <label class="toggle">
@@ -95,7 +95,7 @@
 
     <section class="panel guide-panel" id="guide-section">
       <h2>What model for what task</h2>
-      <p class="intro">Tag each agent step with a hint. Split-stack maps hint → tier → model from your stack.</p>
+      <p class="intro">Tag each agent step with a hint. local-llm-router maps hint → tier → model from your stack.</p>
       <p id="guide-note" class="status muted">Loading…</p>
 
       <h3 class="subhead">Tier ladder (your stack)</h3>

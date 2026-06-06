@@ -1,6 +1,6 @@
 import pytest
 
-from split_stack.tiering import assign_tiers
+from local_llm_router.tiering import assign_tiers
 
 
 def test_assign_tiers_basic_ordering():

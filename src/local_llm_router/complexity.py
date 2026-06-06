@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from split_stack.hints import normalize_step_kind, prefer_code_model, tier_from_step_kind
-from split_stack.models import ComplexityTier, StepKind
+from local_llm_router.hints import normalize_step_kind, prefer_code_model, tier_from_step_kind
+from local_llm_router.models import ComplexityTier, StepKind
 
 DEFAULT_REASONING_MARKERS = (
     "step by step",

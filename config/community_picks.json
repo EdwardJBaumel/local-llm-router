@@ -113,7 +113,7 @@
       "picks": {
         "M": [
           {"model": "phi4-reasoning:14b", "note": "Local reasoning specialist on 12–16 GB."},
-          {"model": "deepseek-r1:8b", "note": "Reasoning tier in split-stack 12 GB preset."},
+          {"model": "deepseek-r1:8b", "note": "Reasoning tier in local-llm-router 12 GB preset."},
           {"model": "qwen3:14b", "note": "Fallback when no R1/Phi pulled."}
         ],
         "L": [

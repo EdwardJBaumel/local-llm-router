@@ -2,15 +2,15 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
-from split_stack.cli import main
-from split_stack.setup_wizard import SetupResult
+from local_llm_router.cli import main
+from local_llm_router.setup_wizard import SetupResult
 
 
-@patch("split_stack.cli.run_setup")
+@patch("local_llm_router.cli.run_setup")
 def test_stack_setup_json(mock_run_setup, capsys):
     mock_run_setup.return_value = SetupResult(
         profile="workstation_12gb",
-        config_path=Path("split-stack.models.json"),
+        config_path=Path("local-llm-router.models.json"),
         pulled=("qwen3:14b",),
         skipped=(),
         already_present=("gemma4:e4b", "qwen3:8b"),
@@ -31,7 +31,7 @@ def test_stack_setup_json(mock_run_setup, capsys):
 
 
 def test_stack_doctor_check_stack_json(capsys):
-    from split_stack.discovery import ModelInventory
+    from local_llm_router.discovery import ModelInventory
 
     inventory = ModelInventory(
         api_models=("gemma4:e4b", "qwen3:8b", "qwen3:14b", "deepseek-r1:8b", "gemma4:26b-a4b"),
@@ -40,9 +40,9 @@ def test_stack_doctor_check_stack_json(capsys):
         suggested_stack=("gemma4:e4b", "qwen3:8b", "qwen3:14b"),
         note=None,
     )
-    with patch("split_stack.stack_health.list_model_inventory", return_value=inventory):
+    with patch("local_llm_router.stack_health.list_model_inventory", return_value=inventory):
         with patch(
-            "split_stack.stack_health.audit_model_folders",
+            "local_llm_router.stack_health.audit_model_folders",
             return_value={"duplicate_tags": []},
         ):
             exit_code = main(["doctor", "--check-stack", "--vram-gb", "16", "--quant", "qat", "--json"])

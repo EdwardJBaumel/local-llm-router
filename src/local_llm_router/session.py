@@ -5,12 +5,12 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 
-from split_stack.model_registry import normalize_deployment_profile
-from split_stack.models import ComplexityTier, RouteDecision, TierMap
-from split_stack.presets import recommended_models
-from split_stack.routing import explain_route, route_prompt
-from split_stack.tiering import assign_tiers, describe_tiers
-from split_stack.validation import validate_tier_map
+from local_llm_router.model_registry import normalize_deployment_profile
+from local_llm_router.models import ComplexityTier, RouteDecision, TierMap
+from local_llm_router.presets import recommended_models
+from local_llm_router.routing import explain_route, route_prompt
+from local_llm_router.tiering import assign_tiers, describe_tiers
+from local_llm_router.validation import validate_tier_map
 
 
 @dataclass(frozen=True)
@@ -43,7 +43,7 @@ def profile_for_vram_gb(vram_gb: int) -> str:
 
 
 def _vram_from_env() -> int | None:
-    raw = os.environ.get("SPLIT_STACK_VRAM_GB", "").strip()
+    raw = os.environ.get("local_llm_router_VRAM_GB", "").strip()
     if not raw:
         return None
     try:
@@ -54,12 +54,12 @@ def _vram_from_env() -> int | None:
 
 
 def _profile_from_env() -> str | None:
-    raw = os.environ.get("SPLIT_STACK_PROFILE", "").strip()
+    raw = os.environ.get("local_llm_router_PROFILE", "").strip()
     return raw or None
 
 
 def default_profile_from_env(*, fallback: str = "workstation_12gb") -> str:
-    """Profile from SPLIT_STACK_PROFILE or SPLIT_STACK_VRAM_GB, else fallback."""
+    """Profile from local_llm_router_PROFILE or local_llm_router_VRAM_GB, else fallback."""
     profile = _profile_from_env()
     if profile:
         return normalize_deployment_profile(profile)
@@ -70,7 +70,7 @@ def default_profile_from_env(*, fallback: str = "workstation_12gb") -> str:
 
 
 def _quant_from_env() -> str | None:
-    from split_stack.quantization import quant_from_env
+    from local_llm_router.quantization import quant_from_env
 
     return quant_from_env()
 
@@ -84,7 +84,7 @@ def _resolve_models(
     if models:
         return models, None
 
-    from split_stack.quantization import normalize_quant_mode
+    from local_llm_router.quantization import normalize_quant_mode
 
     desired = recommended_models(profile, quant=quant)
     note: str | None = None
@@ -92,7 +92,7 @@ def _resolve_models(
     if mode == "qat" and len(desired) > len(recommended_models(profile)):
         note = "QAT stack: added Gemma 4 models that fit at int4 runtime sizes."
     try:
-        from split_stack.discovery import discover_models_from_disk
+        from local_llm_router.discovery import discover_models_from_disk
 
         disk = discover_models_from_disk()
     except Exception:
@@ -103,7 +103,7 @@ def _resolve_models(
         if len(matched) >= 2:
             return matched, None
         if len(disk) >= 2:
-            from split_stack.model_registry import load_registry, model_weight
+            from local_llm_router.model_registry import load_registry, model_weight
 
             registry = load_registry(profile=profile)
             ranked = sorted(disk, key=lambda name: model_weight(name, registry))
@@ -134,7 +134,7 @@ def configure(
     - ``configure(..., models=[...], tiers=...)`` — explicit ladder (power users)
     """
     global _session
-    from split_stack.quantization import normalize_quant_mode
+    from local_llm_router.quantization import normalize_quant_mode
 
     if quant is None:
         quant = _quant_from_env()
@@ -148,7 +148,7 @@ def configure(
         if vram_gb is None:
             raise ValueError(
                 "Pass vram_gb=16 (or profile='workstation_16gb'), "
-                "or set SPLIT_STACK_VRAM_GB / SPLIT_STACK_PROFILE."
+                "or set local_llm_router_VRAM_GB / local_llm_router_PROFILE."
             )
         profile = profile_for_vram_gb(vram_gb)
     else:
@@ -211,7 +211,7 @@ def _ensure_session() -> Session:
             session = _session
         else:
             raise RuntimeError(
-                "split_stack.configure(vram_gb=16) first, or set SPLIT_STACK_VRAM_GB."
+                "local_llm_router.configure(vram_gb=16) first, or set local_llm_router_VRAM_GB."
             )
     assert session is not None
     return session

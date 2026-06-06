@@ -9,7 +9,7 @@ See also: docs/INTEGRATION.md
 
 from __future__ import annotations
 
-from split_stack import (
+from local_llm_router import (
     TierMap,
     assign_tiers,
     configure,
@@ -19,7 +19,7 @@ from split_stack import (
     route,
     route_prompt,
 )
-from split_stack.session import reset_session_for_tests
+from local_llm_router.session import reset_session_for_tests
 
 PROMPT = "what is JWT in one sentence?"
 HINT = "lookup"
@@ -86,7 +86,7 @@ def level3_explicit_no_session() -> None:
 
 
 def main() -> int:
-    _banner("split-stack routing patterns (dry — no Ollama)")
+    _banner("local-llm-router routing patterns (dry — no Ollama)")
     level0_session_preset()
     level1_session_explicit_models()
     level2_session_custom_tiers()

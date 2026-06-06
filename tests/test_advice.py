@@ -1,4 +1,4 @@
-from split_stack.advice import stack_recommendation
+from local_llm_router.advice import stack_recommendation
 
 
 def test_stack_recommendation_defaults():

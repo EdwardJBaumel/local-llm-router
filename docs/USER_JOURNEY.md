@@ -2,21 +2,21 @@
 
 You are building a passion-project site or app. You want cheap, private LLM help without burning Cursor quota on every small question.
 
-split-stack does not replace Cursor. It routes the *other* prompts to the smallest local model that fits.
+local-llm-router does not replace Cursor. It routes the *other* prompts to the smallest local model that fits.
 
-## The split stack for this workflow
+## The Local LLM Router for this workflow
 
 | Task | Tool | Why |
 | --- | --- | --- |
 | Scaffold pages, fix bugs, run agents | Cursor on **Auto** | Agent + terminal + repo context |
-| Tagline ideas, copy tweaks, "explain CSS grid" | **split-stack + Ollama** | Free, local, auto-picks small vs large model |
+| Tagline ideas, copy tweaks, "explain CSS grid" | **local-llm-router + Ollama** | Free, local, auto-picks small vs large model |
 | Long prose drafts | Claude/ChatGPT app | Better writing UX than IDE chat |
 
 ## Day 0: one-time setup (~15 minutes)
 
 ```text
-your-site/                   ← your repo (separate from split-stack)
-split-stack/                 ← clone or pip install this library
+your-site/                   ← your repo (separate from local-llm-router)
+local-llm-router/                 ← clone or pip install this library
 Ollama                       ← local inference runtime
 ```
 
@@ -28,10 +28,10 @@ ollama pull qwen3:8b
 ollama serve
 ```
 
-### 2. Install split-stack
+### 2. Install local-llm-router
 
 ```bash
-cd split-stack
+cd local-llm-router
 python -m pip install -e ".[ollama]"
 stack requirements local_assistant --check
 ```
@@ -42,13 +42,13 @@ stack requirements local_assistant --check
 python "examples/embed_script/copy_helper.py" "suggest 5 taglines for a personal brand site"
 ```
 
-Or use the VS Code / Cursor extension: **Split Stack: Quick Ask**.
+Or use the VS Code / Cursor extension: **Local LLM Router: Quick Ask**.
 
 ## Day 1: wire it into your repo
 
 ```bash
 cd ../your-site
-pip install -e "../split-stack[ollama]"
+pip install -e "../local-llm-router[ollama]"
 ```
 
 Copy the `ask_local()` pattern from [`examples/embed_script/copy_helper.py`](../examples/embed_script/copy_helper.py) into `scripts/ask.py`.

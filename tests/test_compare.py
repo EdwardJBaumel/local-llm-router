@@ -2,15 +2,15 @@ import json
 
 import pytest
 
-from split_stack.cli import main
-from split_stack.compare import (
+from local_llm_router.cli import main
+from local_llm_router.compare import (
     DEFAULT_STEPS,
     CompareRunError,
     format_compare_text,
     largest_model,
     run_compare,
 )
-from split_stack.ollama_errors import format_ollama_error
+from local_llm_router.ollama_errors import format_ollama_error
 
 
 def test_largest_model_picks_heaviest():
@@ -37,7 +37,7 @@ def test_run_compare_dry_spreads_models():
 def test_format_compare_text_includes_summary():
     report = run_compare(model_names=["gemma4:e4b", "qwen3:8b", "qwen3:14b"])
     text = format_compare_text(report)
-    assert "Compare: split-stack vs always-largest (qwen3:14b)" in text
+    assert "Compare: local-llm-router vs always-largest (qwen3:14b)" in text
     assert "quick_lookup" in text
     assert "3/5 steps avoided largest" in text
 
@@ -46,7 +46,7 @@ def test_stack_compare_cli(capsys):
     exit_code = main(["compare"])
     output = capsys.readouterr().out
     assert exit_code == 0
-    assert "split-stack vs always-largest" in output
+    assert "local-llm-router vs always-largest" in output
     assert "3/5 steps avoided largest" in output
     assert "gemma4:e4b" in output or "qwen3:8b" in output
 
@@ -87,7 +87,7 @@ def test_stack_compare_live_missing_model(capsys, monkeypatch):
     def fake_generate(*args, **kwargs):
         raise RuntimeError("Model 'qwen3:14b' not found. Run: ollama pull qwen3:14b")
 
-    monkeypatch.setattr("split_stack.ollama_generate.generate_text", fake_generate)
+    monkeypatch.setattr("local_llm_router.ollama_generate.generate_text", fake_generate)
     exit_code = main(["compare", "--live"])
     captured = capsys.readouterr()
     assert exit_code == 1

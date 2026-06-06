@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from split_stack.model_registry import normalize_deployment_profile
-from split_stack.models import TierMap
-from split_stack.tiering import assign_tiers
+from local_llm_router.model_registry import normalize_deployment_profile
+from local_llm_router.models import TierMap
+from local_llm_router.tiering import assign_tiers
 
 
 @dataclass(frozen=True)
@@ -66,7 +66,7 @@ def recommended_models(profile: str, *, quant: str | None = None) -> list[str]:
     if stack is None:
         valid = ", ".join(sorted(RECOMMENDED_STACKS))
         raise ValueError(f"Unknown profile '{profile}'. Valid workstation stacks: {valid}")
-    from split_stack.quantization import expand_models_for_quant
+    from local_llm_router.quantization import expand_models_for_quant
 
     return expand_models_for_quant(list(stack.models), profile_name, quant)
 

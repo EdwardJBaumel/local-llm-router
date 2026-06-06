@@ -1,5 +1,5 @@
-from split_stack.models import ComplexityTier, StepKind, TierMap
-from split_stack.routing import route_prompt
+from local_llm_router.models import ComplexityTier, StepKind, TierMap
+from local_llm_router.routing import route_prompt
 
 
 def test_route_prompt_returns_tier_and_model():

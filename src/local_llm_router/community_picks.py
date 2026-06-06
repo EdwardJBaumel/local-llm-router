@@ -39,12 +39,12 @@ def config_search_paths(explicit: str | None = None) -> list[Path]:
     paths: list[Path] = []
     if explicit:
         paths.append(Path(explicit))
-    env_path = os.environ.get("SPLIT_STACK_COMMUNITY_CONFIG", "").strip()
+    env_path = os.environ.get("local_llm_router_COMMUNITY_CONFIG", "").strip()
     if env_path:
         paths.append(Path(env_path))
     paths.extend(
         [
-            Path.cwd() / "split-stack.community.json",
+            Path.cwd() / "local-llm-router.community.json",
             Path.cwd() / "config" / "community_picks.json",
             _PACKAGE_DEFAULT,
         ]
@@ -70,7 +70,7 @@ def _load_raw(config_path: str | None = None) -> dict[str, Any]:
             return json.loads(path.read_text(encoding="utf-8-sig"))
     raise FileNotFoundError(
         "community picks config not found. Copy config/community_picks.json "
-        "or set SPLIT_STACK_COMMUNITY_CONFIG."
+        "or set local_llm_router_COMMUNITY_CONFIG."
     )
 
 

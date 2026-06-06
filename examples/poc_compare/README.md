@@ -1,13 +1,13 @@
 # Compare POC
 
-Side-by-side proof: **split-stack routing** vs **always use the largest model** on the same 5-step agent loop.
+Side-by-side proof: **local-llm-router routing** vs **always use the largest model** on the same 5-step agent loop.
 
 Answers the main objection: *why not just run qwen3:14b on every step?*
 
 ## Dry run (default, no Ollama)
 
 ```bash
-cd split-stack
+cd local-llm-router
 python examples/poc_compare/run.py
 ```
 
@@ -28,7 +28,7 @@ stack compare
 Default stack: **`gemma4:e4b,qwen3:8b,qwen3:14b`**
 
 ```text
-Compare: split-stack vs always-largest (qwen3:14b)
+Compare: local-llm-router vs always-largest (qwen3:14b)
 
  step              | routed tier | routed model | baseline model
  understand_goal    | medium      | qwen3:8b     | qwen3:14b
@@ -38,7 +38,7 @@ Compare: split-stack vs always-largest (qwen3:14b)
  reason             | reasoning   | qwen3:14b    | qwen3:14b
 
 Summary:
-  split-stack:  3 models used, 3/5 steps avoided largest
+  local-llm-router:  3 models used, 3/5 steps avoided largest
   baseline:     1 model used, 5/5 on largest
 ```
 

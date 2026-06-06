@@ -1,4 +1,4 @@
-"""Compare POC: split-stack routing vs always-largest on the 5-step agent loop."""
+"""Compare POC: local-llm-router routing vs always-largest on the 5-step agent loop."""
 
 from __future__ import annotations
 
@@ -6,12 +6,12 @@ import argparse
 import json
 from dataclasses import asdict
 
-from split_stack.compare import format_compare_text, run_compare
+from local_llm_router.compare import format_compare_text, run_compare
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Compare split-stack routing vs always-largest baseline",
+        description="Compare local-llm-router routing vs always-largest baseline",
     )
     parser.add_argument("--live", action="store_true", help="Call Ollama per step (slow)")
     parser.add_argument("--json", action="store_true", help="Print JSON results")

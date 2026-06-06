@@ -2,9 +2,10 @@
 
 ## Product and package names
 
-- Repo name: `split-stack` (kebab-case for URLs)
-- Python package: `split_stack` (snake_case import style)
-- CLI command: `stack` (short and consistent)
+- Repo name: `local-llm-router` (kebab-case for URLs; legacy folder `split-stack` may still exist on disk)
+- Python package: `local_llm_router` (snake_case import style)
+- PyPI distribution: `local-llm-router`
+- CLI command: `llm-router` (primary); `stack` is a deprecated alias
 
 ## Module names
 
@@ -13,7 +14,7 @@ Use lowercase snake_case nouns by responsibility:
 - `models.py`: shared dataclasses and enums
 - `tiering.py`: model tier assignment logic
 - `complexity.py`: prompt complexity scoring
-- `advice.py`: split-stack recommendations and warnings
+- `advice.py`: Local LLM Router recommendations and warnings
 - `discovery.py`: optional external model discovery (Ollama)
 - `requirements.py`: usage profiles and prerequisite catalog
 - `benchmark.py`: fixed prompt benchmark for routing evidence
@@ -31,13 +32,24 @@ Use lowercase snake_case nouns by responsibility:
 
 ## API boundaries
 
-- Export public API through `split_stack.__init__`
+- Export public API through `local_llm_router.__init__`
 - Keep `cli.py` as a consumer, not a source of business logic
 - Keep optional integrations (Ollama, emitters) out of core logic paths
 
 ## Monorepo layout
 
-- Python library: `src/split_stack/`
+- Python library: `src/local_llm_router/`
 - VS Code companion: `extension/vscode/`
-- Extension command IDs: `splitstack.*` (e.g. `splitstack.quickAsk`)
-- Extension settings: `splitstack.pythonPath`, `splitstack.ollamaBaseUrl`
+- Extension command IDs: `localLlmRouter.*` (e.g. `localLlmRouter.quickAsk`)
+- Extension settings: `localLlmRouter.pythonPath`, `localLlmRouter.ollamaBaseUrl`
+
+## Legacy names (do not use in new code)
+
+| Legacy | Replacement |
+| --- | --- |
+| `split-stack` (PyPI) | `local-llm-router` |
+| `split_stack` (import) | `local_llm_router` |
+| `stack` (CLI only) | `llm-router` |
+| `splitstack.*` (VS Code) | `localLlmRouter.*` |
+| `SPLIT_STACK_MODELS_CONFIG` | `LOCAL_LLM_ROUTER_MODELS_CONFIG` |
+| `split-stack.models.json` | `local-llm-router.models.json` |

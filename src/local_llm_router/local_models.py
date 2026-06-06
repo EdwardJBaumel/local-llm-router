@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from split_stack.discovery import discover_models, discover_models_from_disk, list_model_inventory
-from split_stack.model_registry import ResolvedModel, load_registry, resolve_discovered_models
-from split_stack.tiering import assign_tiers
+from local_llm_router.discovery import discover_models, discover_models_from_disk, list_model_inventory
+from local_llm_router.model_registry import ResolvedModel, load_registry, resolve_discovered_models
+from local_llm_router.tiering import assign_tiers
 
 
 def list_local_models(

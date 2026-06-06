@@ -1,9 +1,9 @@
-# Start split-stack demo UI with your Ollama models folder.
+# Start local-llm-router demo UI with your Ollama models folder.
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Project = Split-Path -Parent (Split-Path -Parent $Root)
 
-$ModelsDir = $env:SPLIT_STACK_OLLAMA_MODELS
+$ModelsDir = $env:local_llm_router_OLLAMA_MODELS
 if (-not $ModelsDir) {
     $ModelsDir = $env:OLLAMA_MODELS
 }
@@ -16,11 +16,11 @@ if (-not $ModelsDir) {
 
 $ServerArgs = @("--port", "8765")
 if (Test-Path $ModelsDir) {
-    $env:SPLIT_STACK_OLLAMA_MODELS = $ModelsDir
+    $env:local_llm_router_OLLAMA_MODELS = $ModelsDir
     $ServerArgs += @("--models-dir", $ModelsDir)
     Write-Host "Models dir: $ModelsDir"
 } else {
-    Write-Warning "Models dir not found at $ModelsDir - set SPLIT_STACK_OLLAMA_MODELS"
+    Write-Warning "Models dir not found at $ModelsDir - set local_llm_router_OLLAMA_MODELS"
 }
 
 Set-Location $Project

@@ -9,11 +9,11 @@ import time
 from dataclasses import asdict, dataclass
 from enum import Enum
 
-from split_stack import TierMap, configure, describe_session, explain, get_session, route
-from split_stack.ollama_generate import generate_text
-from split_stack.routing import explain_route
-from split_stack.tiering import assign_tiers
-from split_stack.session import reset_session_for_tests
+from local_llm_router import TierMap, configure, describe_session, explain, get_session, route
+from local_llm_router.ollama_generate import generate_text
+from local_llm_router.routing import explain_route
+from local_llm_router.tiering import assign_tiers
+from local_llm_router.session import reset_session_for_tests
 
 
 class RoutingMode(str, Enum):
@@ -225,13 +225,13 @@ def main() -> int:
     parser.add_argument("--json", action="store_true", help="Print JSON results")
     parser.add_argument("--verbose", action="store_true", help="Print session + explain reasons")
     parser.add_argument("--base-url", default="http://127.0.0.1:11434")
-    parser.add_argument("--profile", default=os.environ.get("SPLIT_STACK_PROFILE") or "workstation_16gb")
+    parser.add_argument("--profile", default=os.environ.get("local_llm_router_PROFILE") or "workstation_16gb")
     parser.add_argument(
         "--vram-gb",
         type=int,
-        default=int(os.environ.get("SPLIT_STACK_VRAM_GB", "16") or 16),
+        default=int(os.environ.get("local_llm_router_VRAM_GB", "16") or 16),
     )
-    parser.add_argument("--quant", default=os.environ.get("SPLIT_STACK_QUANT") or "qat")
+    parser.add_argument("--quant", default=os.environ.get("local_llm_router_QUANT") or "qat")
     parser.add_argument(
         "--models",
         help="Comma-separated models (session level 1, or explicit with --explicit)",

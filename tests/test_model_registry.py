@@ -1,12 +1,12 @@
 import pytest
 
-from split_stack.model_registry import (
+from local_llm_router.model_registry import (
     infer_model_profile,
     load_registry,
     normalize_deployment_profile,
     resolve_discovered_models,
 )
-from split_stack.tiering import assign_tiers
+from local_llm_router.tiering import assign_tiers
 
 
 def test_gemma4_e4b_gets_sensible_weight():
@@ -43,7 +43,7 @@ def test_assign_tiers_ranks_gemma_and_qwen():
 
 
 def test_custom_config_overrides(tmp_path):
-    config = tmp_path / "split-stack.models.json"
+    config = tmp_path / "local-llm-router.models.json"
     config.write_text(
         """
         {
@@ -83,7 +83,7 @@ def test_datacenter_profile_skips_vram_filter():
 
 
 def test_datacenter_config_from_file(tmp_path):
-    config = tmp_path / "split-stack.models.json"
+    config = tmp_path / "local-llm-router.models.json"
     config.write_text(
         """
         {

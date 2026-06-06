@@ -1,7 +1,7 @@
-from split_stack.discovery import discover_models_from_disk, list_model_inventory, manifest_search_paths
-from split_stack.hints import canonical_hint_id, list_hints, normalize_step_kind
-from split_stack.models import StepKind
-from split_stack.poc_models import models_for_preset, recommended_stack_for_vram, resolve_installed_stack, stack_payload
+from local_llm_router.discovery import discover_models_from_disk, list_model_inventory, manifest_search_paths
+from local_llm_router.hints import canonical_hint_id, list_hints, normalize_step_kind
+from local_llm_router.models import StepKind
+from local_llm_router.poc_models import models_for_preset, recommended_stack_for_vram, resolve_installed_stack, stack_payload
 
 
 def test_hint_catalog_has_five_entries():

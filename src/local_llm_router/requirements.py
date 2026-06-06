@@ -7,7 +7,7 @@ from typing import Callable
 
 
 class UsageProfile(str, Enum):
-    """Supported ways to use split-stack."""
+    """Supported ways to use local-llm-router."""
 
     CORE = "core"
     OLLAMA_DISCOVERY = "ollama_discovery"
@@ -76,12 +76,12 @@ def _catalog() -> dict[UsageProfile, tuple[Prerequisite, ...]]:
                 verify_hint="python --version",
             ),
             Prerequisite(
-                id="split_stack",
-                description="split-stack package installed",
+                id="local_llm_router",
+                description="local-llm-router package installed",
                 kind="package",
                 required=True,
-                install_command="python -m pip install split-stack",
-                verify_hint="python -c \"import split_stack\"",
+                install_command="python -m pip install local-llm-router",
+                verify_hint="python -c \"import local_llm_router\"",
             ),
             Prerequisite(
                 id="model_names",
@@ -101,19 +101,19 @@ def _catalog() -> dict[UsageProfile, tuple[Prerequisite, ...]]:
                 verify_hint="python --version",
             ),
             Prerequisite(
-                id="split_stack",
-                description="split-stack package installed",
+                id="local_llm_router",
+                description="local-llm-router package installed",
                 kind="package",
                 required=True,
-                install_command="python -m pip install split-stack",
-                verify_hint="python -c \"import split_stack\"",
+                install_command="python -m pip install local-llm-router",
+                verify_hint="python -c \"import local_llm_router\"",
             ),
             Prerequisite(
                 id="requests",
                 description="requests library (optional extra)",
                 kind="package",
                 required=True,
-                install_command="python -m pip install split-stack[ollama]",
+                install_command="python -m pip install local-llm-router[ollama]",
                 verify_hint="python -c \"import requests\"",
             ),
             Prerequisite(
@@ -142,19 +142,19 @@ def _catalog() -> dict[UsageProfile, tuple[Prerequisite, ...]]:
                 verify_hint="python --version",
             ),
             Prerequisite(
-                id="split_stack",
-                description="split-stack installed in editable mode from repo checkout",
+                id="local_llm_router",
+                description="local-llm-router installed in editable mode from repo checkout",
                 kind="package",
                 required=True,
                 install_command="python -m pip install -e .",
-                verify_hint="python -c \"import split_stack\"",
+                verify_hint="python -c \"import local_llm_router\"",
             ),
             Prerequisite(
                 id="requests",
                 description="requests library for Ollama HTTP calls",
                 kind="package",
                 required=True,
-                install_command="python -m pip install split-stack[ollama]",
+                install_command="python -m pip install local-llm-router[ollama]",
                 verify_hint="python -c \"import requests\"",
             ),
             Prerequisite(
@@ -190,11 +190,11 @@ def _catalog() -> dict[UsageProfile, tuple[Prerequisite, ...]]:
                 verify_hint="python --version",
             ),
             Prerequisite(
-                id="split_stack",
-                description="split-stack package installed (includes stack CLI)",
+                id="local_llm_router",
+                description="local-llm-router package installed (includes stack CLI)",
                 kind="package",
                 required=True,
-                install_command="python -m pip install split-stack",
+                install_command="python -m pip install local-llm-router",
                 verify_hint="stack doctor",
             ),
             Prerequisite(
@@ -202,7 +202,7 @@ def _catalog() -> dict[UsageProfile, tuple[Prerequisite, ...]]:
                 description="requests library for Ollama tier detection",
                 kind="package",
                 required=False,
-                install_command="python -m pip install split-stack[ollama]",
+                install_command="python -m pip install local-llm-router[ollama]",
                 verify_hint="python -c \"import requests\"",
             ),
             Prerequisite(
@@ -232,7 +232,7 @@ _PROFILE_META: dict[UsageProfile, tuple[str, str]] = {
     ),
     UsageProfile.CLI_DOCTOR: (
         "CLI doctor",
-        "Run stack doctor for split-stack guidance and optional Ollama tier output.",
+        "Run stack doctor for local-llm-router guidance and optional Ollama tier output.",
     ),
 }
 
@@ -243,7 +243,7 @@ def list_usage_profiles() -> list[UsageProfile]:
 
 _CHECKERS: dict[str, Callable[[], bool]] = {
     "python": _python_ok,
-    "split_stack": lambda: True,
+    "local_llm_router": lambda: True,
     "requests": _requests_ok,
     "ollama": _ollama_ok,
     "ollama_models": _ollama_ok,

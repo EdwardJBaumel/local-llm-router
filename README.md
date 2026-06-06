@@ -1,34 +1,34 @@
-﻿# split-stack
+# local-llm-router
 
 **A Python routing library for local LLM agent loops.**
 
-Give split-stack a prompt and your model list. It returns a complexity tier and which model to call. You keep your agent runner, gateway, or Ollama client — split-stack only decides *which* local model each step should use.
+Give local-llm-router a prompt and your model list. It returns a complexity tier and which model to call. You keep your agent runner, gateway, or Ollama client — local-llm-router only decides *which* local model each step should use.
 
 Zero runtime dependencies. Works offline. No inference, no agent framework, no chat UI.
 
 ## Install
 
 ```bash
-pip install split-stack
-pip install "split-stack[ollama]"   # optional: Ollama discovery, stack ask
+pip install local-llm-router
+pip install "local-llm-router[ollama]"   # optional: Ollama discovery, stack ask
 ```
 
 ## Quick start
 
 ```python
-import split_stack
+import local_llm_router
 
-split_stack.configure(vram_gb=16, quant="qat")  # once — or SPLIT_STACK_VRAM_GB=16
+local_llm_router.configure(vram_gb=16, quant="qat")  # once — or local_llm_router_VRAM_GB=16
 
 for step in agent_steps:
-    tier, model = split_stack.route(step.prompt, hint=step.hint)
+    tier, model = local_llm_router.route(step.prompt, hint=step.hint)
     response = your_llm.complete(model=model, prompt=step.prompt)
 ```
 
 Power-user path (explicit tier map):
 
 ```python
-from split_stack import assign_tiers, route_prompt
+from local_llm_router import assign_tiers, route_prompt
 
 tiers = assign_tiers(["gemma4:e4b", "qwen3:8b", "qwen3:14b"])
 tier, model = route_prompt(step.prompt, tiers, hint=step.hint)
@@ -56,14 +56,14 @@ Step hints: `lookup`, `explain`, `design`, `code`, `reason` — override keyword
 ## VRAM and quant
 
 ```python
-split_stack.configure(vram_gb=16, quant="qat")
+local_llm_router.configure(vram_gb=16, quant="qat")
 ```
 
 | VRAM | Profile |
 | --- | --- |
 | ≤8 / 12 / 16 / 24 / 32 GB | `workstation_8gb` … `workstation_32gb` |
 
-`quant=` is **not** per-prompt routing — it tells split-stack which pull format you use so VRAM filters and stack suggestions stay honest (QAT vs default Ollama Q4). Details: [`docs/LOCAL_MODELS.md`](docs/LOCAL_MODELS.md).
+`quant=` is **not** per-prompt routing — it tells local-llm-router which pull format you use so VRAM filters and stack suggestions stay honest (QAT vs default Ollama Q4). Details: [`docs/LOCAL_MODELS.md`](docs/LOCAL_MODELS.md).
 
 ## What it is not
 
@@ -85,8 +85,8 @@ See `examples/*/README.md` for each.
 ## Contributors
 
 ```bash
-git clone https://github.com/edwardjbaumel/split-stack.git
-cd split-stack
+git clone https://github.com/edwardjbaumel/local-llm-router.git
+cd local-llm-router
 pip install -e ".[dev,ollama]"
 pytest
 stack setup --profile 12gb --dry-run
@@ -96,4 +96,4 @@ Docs: [`docs/PUBLISHING.md`](docs/PUBLISHING.md) · [`docs/SECURITY.md`](docs/SE
 
 ## Related
 
-[Local Recruiting Ops](https://github.com/edwardjbaumel/local-recruiting-ops) — separate project by the same author; split-stack does not depend on it.
+[Local Recruiting Ops](https://github.com/edwardjbaumel/local-recruiting-ops) — separate project by the same author; local-llm-router does not depend on it.

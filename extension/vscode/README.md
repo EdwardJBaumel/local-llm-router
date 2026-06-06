@@ -1,4 +1,4 @@
-# Split Stack — VS Code / Cursor companion (optional demo)
+# Local LLM Router — VS Code / Cursor companion (optional demo)
 
 **Not the product.** This is a thin Quick Ask panel so professionals can try routing visually. The product is the Python library (`route_prompt`, `assign_tiers`) for agent-loop builders — see the [root README](../../README.md).
 
@@ -27,7 +27,7 @@ Press F5 in VS Code to launch Extension Development Host.
 
 ## Usage
 
-1. Command palette → **Split Stack: Quick Ask**
+1. Command palette → **Local LLM Router: Quick Ask**
 2. Type a question and click Ask
 3. Panel shows tier, model, and answer
 
@@ -35,11 +35,11 @@ Press F5 in VS Code to launch Extension Development Host.
 
 | Setting | Default | Description |
 | --- | --- | --- |
-| `splitstack.pythonPath` | `python` | Python executable with split-stack installed |
-| `splitstack.ollamaBaseUrl` | `http://127.0.0.1:11434` | Ollama base URL |
+| `localLlmRouter.pythonPath` | `python` | Python executable with local-llm-router installed |
+| `localLlmRouter.ollamaBaseUrl` | `http://127.0.0.1:11434` | Ollama base URL |
 
 ## Architecture
 
-Extension spawns: `python -m split_stack ask --prompt "..." --json --base-url ...`
+Extension spawns: `python -m local_llm_router ask --prompt "..." --json --base-url ...`
 
 See root README and `docs/USER_STORIES.md`.

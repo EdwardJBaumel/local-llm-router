@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from split_stack.complexity import (
+from local_llm_router.complexity import (
     looks_like_code,
     resolve_tier,
     score_prompt,
 )
-from split_stack.hints import normalize_step_kind, prefer_code_model
-from split_stack.models import ComplexityTier, RouteDecision, StepKind, TierMap
-from split_stack.tiering import describe_tiers
+from local_llm_router.hints import normalize_step_kind, prefer_code_model
+from local_llm_router.models import ComplexityTier, RouteDecision, StepKind, TierMap
+from local_llm_router.tiering import describe_tiers
 
 
 def route_prompt(

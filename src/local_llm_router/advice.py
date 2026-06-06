@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from split_stack.models import StackAdvice
+from local_llm_router.models import StackAdvice
 
 
 def stack_recommendation(cursor_override_enabled: bool = False) -> StackAdvice:

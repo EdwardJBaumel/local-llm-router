@@ -6,13 +6,13 @@ import logging
 import os
 import sys
 
-logger = logging.getLogger("split_stack")
+logger = logging.getLogger("local_llm_router")
 
 _emitted = False
 
 
 def _import_tips_mode() -> str:
-    return os.environ.get("SPLIT_STACK_IMPORT_TIPS", "off").strip().lower()
+    return os.environ.get("local_llm_router_IMPORT_TIPS", "off").strip().lower()
 
 
 def _is_disabled(mode: str) -> bool:
@@ -33,7 +33,7 @@ def _should_echo_stderr(mode: str) -> bool:
 
 
 def _default_report_profile() -> str:
-    from split_stack.session import default_profile_from_env
+    from local_llm_router.session import default_profile_from_env
 
     return default_profile_from_env()
 
@@ -45,13 +45,13 @@ def model_recommendation_report(
     base_url: str = "http://127.0.0.1:11434",
 ) -> list[str]:
     """Build human-readable lines about installed vs recommended models."""
-    from split_stack.community_picks import (
+    from local_llm_router.community_picks import (
         focus_stack,
         recommended_models_for_tier,
         vram_tier_for_profile,
     )
-    from split_stack.discovery import audit_model_folders, discover_models_from_disk, list_model_inventory
-    from split_stack.model_registry import normalize_deployment_profile
+    from local_llm_router.discovery import audit_model_folders, discover_models_from_disk, list_model_inventory
+    from local_llm_router.model_registry import normalize_deployment_profile
 
     profile_name = normalize_deployment_profile(profile or _default_report_profile())
     vram_tier = vram_tier_for_profile(profile)
@@ -67,7 +67,7 @@ def model_recommendation_report(
 
     lines: list[str] = []
     if not installed:
-        lines.append("split-stack: no local Ollama models found on disk.")
+        lines.append("local-llm-router: no local Ollama models found on disk.")
         lines.append(
             "  Starter agent stack: ollama pull gemma4:e4b && "
             "ollama pull qwen3:8b && ollama pull qwen3:14b"
@@ -75,7 +75,7 @@ def model_recommendation_report(
         lines.append("  Then: stack models --include-disk")
         return lines
 
-    header = f"split-stack: {len(installed)} local model(s)"
+    header = f"local-llm-router: {len(installed)} local model(s)"
     if primary:
         header += f" under {primary}"
     lines.append(f"{header} (profile {profile_name}, tier {vram_tier}).")
@@ -136,7 +136,7 @@ def emit_import_tips(
     include_api: bool = False,
     base_url: str = "http://127.0.0.1:11434",
 ) -> None:
-    """Log model recommendations once per process (controlled by SPLIT_STACK_IMPORT_TIPS)."""
+    """Log model recommendations once per process (controlled by local_llm_router_IMPORT_TIPS)."""
     global _emitted
     if _emitted:
         return
@@ -153,7 +153,7 @@ def emit_import_tips(
             base_url=base_url,
         )
     except Exception as exc:
-        logger.debug("split-stack import tips skipped: %s", exc)
+        logger.debug("local-llm-router import tips skipped: %s", exc)
         return
 
     for line in lines:

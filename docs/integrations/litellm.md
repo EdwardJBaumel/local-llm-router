@@ -1,6 +1,6 @@
 # LiteLLM integration recipe
 
-split-stack does not ship a LiteLLM plugin. Add a **custom router** in your gateway in ~15 lines.
+local-llm-router does not ship a LiteLLM plugin. Add a **custom router** in your gateway in ~15 lines.
 
 ## When to use
 
@@ -11,13 +11,13 @@ split-stack does not ship a LiteLLM plugin. Add a **custom router** in your gate
 ## Install
 
 ```bash
-pip install split-stack litellm
+pip install local-llm-router litellm
 ```
 
 ## Custom router sketch
 
 ```python
-from split_stack import assign_tiers, route_prompt
+from local_llm_router import assign_tiers, route_prompt
 
 _tiers = assign_tiers(["qwen3:4b", "qwen3:8b", "qwen3:14b"])
 

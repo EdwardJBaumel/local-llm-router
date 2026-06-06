@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from split_stack.models import ComplexityTier, StepKind
+from local_llm_router.models import ComplexityTier, StepKind
 
 # Five step types used in compare POC and agent-runner demos.
 HINT_CATALOG: tuple[dict[str, str], ...] = (

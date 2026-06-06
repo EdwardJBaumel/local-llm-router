@@ -1,13 +1,13 @@
 import pytest
 
-from split_stack.model_registry import infer_model_profile, load_registry
-from split_stack.presets import recommended_models
-from split_stack.quantization import (
+from local_llm_router.model_registry import infer_model_profile, load_registry
+from local_llm_router.presets import recommended_models
+from local_llm_router.quantization import (
     adjust_vram_for_quant,
     expand_models_for_quant,
     normalize_quant_mode,
 )
-from split_stack.session import configure, reset_session_for_tests
+from local_llm_router.session import configure, reset_session_for_tests
 
 
 def test_normalize_quant_mode_aliases():
@@ -31,7 +31,7 @@ def test_qat_adjusts_gemma4_e4b_vram():
 
 
 def test_qat_makes_26b_a4b_fit_16gb_profile():
-    from split_stack.model_registry import ModelRegistry, _entries_from_raw, _BUILTIN_RAW
+    from local_llm_router.model_registry import ModelRegistry, _entries_from_raw, _BUILTIN_RAW
 
     reg = ModelRegistry(
         profile="workstation_16gb",
@@ -63,7 +63,7 @@ def test_qat_expands_16gb_stack():
 
 def test_configure_with_quant(monkeypatch):
     reset_session_for_tests()
-    monkeypatch.delenv("SPLIT_STACK_VRAM_GB", raising=False)
+    monkeypatch.delenv("local_llm_router_VRAM_GB", raising=False)
     session = configure(vram_gb=16, quant="qat", models=["gemma4:e4b", "qwen3:8b", "gemma4:26b-a4b"])
     assert session.quant == "qat"
     assert "gemma4:26b-a4b" in session.models

@@ -10,7 +10,7 @@ from pathlib import Path
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = EXAMPLE_DIR.parents[1]
-DEFAULT_CONFIG = EXAMPLE_DIR / "split-stack.models.json"
+DEFAULT_CONFIG = EXAMPLE_DIR / "local-llm-router.models.json"
 
 DEFAULT_MODELS = ["qwen3:4b", "qwen3:8b", "qwen3:14b", "qwen3:30b-a3b"]
 
@@ -23,13 +23,13 @@ SAMPLE_PROMPTS: tuple[tuple[str, str], ...] = (
 
 
 def _ensure_config() -> Path:
-    config = Path(os.environ.get("SPLIT_STACK_MODELS_CONFIG", DEFAULT_CONFIG))
+    config = Path(os.environ.get("LOCAL_LLM_ROUTER_MODELS_CONFIG", DEFAULT_CONFIG))
     if not config.is_file():
         raise SystemExit(
             f"Config not found: {config}\n"
-            f"Copy {DEFAULT_CONFIG.name} or set SPLIT_STACK_MODELS_CONFIG."
+            f"Copy {DEFAULT_CONFIG.name} or set LOCAL_LLM_ROUTER_MODELS_CONFIG."
         )
-    os.environ.setdefault("SPLIT_STACK_MODELS_CONFIG", str(config))
+    os.environ.setdefault("LOCAL_LLM_ROUTER_MODELS_CONFIG", str(config))
     return config
 
 
@@ -41,7 +41,7 @@ def _section(title: str) -> None:
 
 
 def _print_profile(*, profile: str | None) -> None:
-    from split_stack.model_registry import load_registry
+    from local_llm_router.model_registry import load_registry
 
     registry = load_registry(profile=profile)
     vram = registry.assumed_vram_gb if registry.assumed_vram_gb is not None else "n/a"
@@ -49,7 +49,7 @@ def _print_profile(*, profile: str | None) -> None:
 
 
 def _print_tiers(model_names: list[str]) -> None:
-    from split_stack import assign_tiers
+    from local_llm_router import assign_tiers
 
     tiers = assign_tiers(model_names)
     print("Tier map (from your model list):")
@@ -60,7 +60,7 @@ def _print_tiers(model_names: list[str]) -> None:
 
 
 def _print_routes(model_names: list[str]) -> None:
-    from split_stack import assign_tiers, route_prompt
+    from local_llm_router import assign_tiers, route_prompt
 
     tiers = assign_tiers(model_names)
     print("Prompt routing (no inference):")
@@ -71,7 +71,7 @@ def _print_routes(model_names: list[str]) -> None:
 
 
 def _print_local_models(*, profile: str | None, base_url: str) -> None:
-    from split_stack.local_models import list_local_models
+    from local_llm_router.local_models import list_local_models
 
     models, warning = list_local_models(
         base_url=base_url,
@@ -88,7 +88,7 @@ def _print_local_models(*, profile: str | None, base_url: str) -> None:
 
 
 def _live_ask(*, prompt: str, model_names: list[str], base_url: str) -> None:
-    from split_stack.ollama_generate import ask_prompt_json
+    from local_llm_router.ollama_generate import ask_prompt_json
 
     result = ask_prompt_json(
         prompt,
@@ -127,13 +127,13 @@ def run_tour(
     _print_routes(model_names)
 
     _section("4. Benchmark (library, no Ollama)")
-    from split_stack.benchmark import format_markdown_table, routed_model_mix, run_benchmark
+    from local_llm_router.benchmark import format_markdown_table, routed_model_mix, run_benchmark
 
     report = run_benchmark(model_names=model_names)
     print(format_markdown_table(report))
     print("model_mix:", routed_model_mix(report))
 
-    _section("5. Discover local models (needs Ollama + split-stack[ollama])")
+    _section("5. Discover local models (needs Ollama + local-llm-router[ollama])")
     try:
         _print_local_models(profile=profile, base_url=base_url)
     except Exception as exc:
@@ -160,7 +160,7 @@ def run_tour(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="split-stack quickstart tour")
+    parser = argparse.ArgumentParser(description="local-llm-router quickstart tour")
     parser.add_argument("--tour", action="store_true", help="Run the full guided walkthrough")
     parser.add_argument(
         "--profile",
@@ -180,7 +180,7 @@ def main(argv: list[str] | None = None) -> int:
     model_names = [part.strip() for part in args.models.split(",") if part.strip()]
 
     if args.prompt:
-        from split_stack import assign_tiers, route_prompt
+        from local_llm_router import assign_tiers, route_prompt
 
         tiers = assign_tiers(model_names)
         tier, model = route_prompt(args.prompt, tiers)

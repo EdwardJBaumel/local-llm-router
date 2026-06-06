@@ -1,10 +1,10 @@
-from split_stack.community_picks import (
+from local_llm_router.community_picks import (
     build_community_guide,
     focus_stack,
     picks_for_hint,
     vram_tier_for_profile,
 )
-from split_stack.poc_models import models_for_preset
+from local_llm_router.poc_models import models_for_preset
 
 
 def test_vram_tier_for_12gb_profile():

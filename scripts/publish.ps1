@@ -1,4 +1,4 @@
-# Publish split-stack to TestPyPI and/or PyPI.
+# Publish local-llm-router to TestPyPI and/or PyPI.
 # Requires API tokens as env vars (never commit tokens).
 #
 # TestPyPI:
@@ -6,7 +6,7 @@
 #   $env:TWINE_PASSWORD = "<testpypi-api-token>"
 #   .\scripts\publish.ps1 -Target TestPyPI
 #
-# Production PyPI (use a separate token scoped to split-stack):
+# Production PyPI (use a separate token scoped to local-llm-router):
 #   $env:TWINE_PASSWORD = "<pypi-api-token>"
 #   .\scripts\publish.ps1 -Target PyPI
 #
@@ -76,15 +76,15 @@ function Upload-TestPyPI {
 function Smoke-Test-TestPyPI {
     if ($SkipSmokeTest) { return }
     Write-Host "==> smoke test from TestPyPI" -ForegroundColor Cyan
-    $venv = Join-Path $env:TEMP "split-stack-smoke-venv"
+    $venv = Join-Path $env:TEMP "local-llm-router-smoke-venv"
     if (Test-Path $venv) { Remove-Item -Recurse -Force $venv }
     python -m venv $venv
     & "$venv\Scripts\python.exe" -m pip install -q --upgrade pip
     & "$venv\Scripts\pip.exe" install -q `
         --index-url https://test.pypi.org/simple/ `
         --extra-index-url https://pypi.org/simple/ `
-        "split-stack==0.2.0"
-    & "$venv\Scripts\python.exe" -c "import split_stack; print('version', split_stack.__version__)"
+        "local-llm-router==0.2.0"
+    & "$venv\Scripts\python.exe" -c "import local_llm_router; print('version', local_llm_router.__version__)"
     & "$venv\Scripts\stack.exe" route --prompt "what is JWT?" --hint lookup --json `
         --models gemma4:e4b,qwen3:8b,qwen3:14b
     Write-Host "Smoke test OK" -ForegroundColor Green
@@ -103,7 +103,7 @@ function Invoke-GitTag {
     git fetch origin 2>$null
     $exists = git tag -l $tag
     if (-not $exists) {
-        git tag -a $tag -m "Release split-stack 0.2.0"
+        git tag -a $tag -m "Release local-llm-router 0.2.0"
     }
     git push origin main
     git push origin $tag

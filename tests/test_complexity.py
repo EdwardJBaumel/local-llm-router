@@ -1,6 +1,6 @@
-from split_stack.complexity import resolve_tier, score_prompt
-from split_stack.hints import normalize_step_kind
-from split_stack.models import ComplexityTier, StepKind
+from local_llm_router.complexity import resolve_tier, score_prompt
+from local_llm_router.hints import normalize_step_kind
+from local_llm_router.models import ComplexityTier, StepKind
 
 
 def test_score_prompt_reasoning_marker():

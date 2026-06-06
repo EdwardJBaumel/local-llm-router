@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from split_stack.discovery import audit_model_folders, list_model_inventory
-from split_stack.poc_models import resolve_stack_against_pool, stack_payload
-from split_stack.presets import recommended_models
-from split_stack.quantization import adjust_vram_for_quant, normalize_quant_mode, pull_guidance_lines
-from split_stack.session import default_profile_from_env, profile_for_vram_gb
+from local_llm_router.discovery import audit_model_folders, list_model_inventory
+from local_llm_router.poc_models import resolve_stack_against_pool, stack_payload
+from local_llm_router.presets import recommended_models
+from local_llm_router.quantization import adjust_vram_for_quant, normalize_quant_mode, pull_guidance_lines
+from local_llm_router.session import default_profile_from_env, profile_for_vram_gb
 
 
 @dataclass(frozen=True)
@@ -211,7 +211,7 @@ def format_stack_health(report: StackHealthReport) -> str:
 
 
 def _vram_for_profile(profile: str) -> int | None:
-    from split_stack.model_registry import DEPLOYMENT_PROFILES
+    from local_llm_router.model_registry import DEPLOYMENT_PROFILES
 
     spec = DEPLOYMENT_PROFILES.get(profile)
     if spec is None:
@@ -284,7 +284,7 @@ def _quant_mismatch_findings(
                 code="quant_check_skipped",
                 message=(
                     "Quant check skipped — Ollama /api/tags unreachable or "
-                    "install split-stack[ollama] for requests."
+                    "install local-llm-router[ollama] for requests."
                 ),
             )
         ]

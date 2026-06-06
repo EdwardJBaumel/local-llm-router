@@ -196,13 +196,13 @@ def config_search_paths(explicit: str | None = None) -> list[Path]:
     paths: list[Path] = []
     if explicit:
         paths.append(Path(explicit))
-    env_path = os.environ.get("SPLIT_STACK_MODELS_CONFIG")
+    env_path = os.environ.get("LOCAL_LLM_ROUTER_MODELS_CONFIG")
     if env_path:
         paths.append(Path(env_path))
     paths.extend(
         [
-            Path.cwd() / "split-stack.models.json",
-            Path.home() / ".config" / "split-stack" / "models.json",
+            Path.cwd() / "local-llm-router.models.json",
+            Path.home() / ".config" / "local-llm-router" / "models.json",
         ]
     )
     return paths
@@ -269,7 +269,7 @@ def infer_model_profile(
         weight = _heuristic_weight(name)
         family = _guess_family(name)
         vram_gb = max(3, weight // 1000)
-    from split_stack.quantization import adjust_vram_for_quant, normalize_quant_mode
+    from local_llm_router.quantization import adjust_vram_for_quant, normalize_quant_mode
 
     mode = normalize_quant_mode(quant_mode)
     effective_vram = adjust_vram_for_quant(name, vram_gb, mode)

@@ -1,4 +1,4 @@
-from split_stack.requirements import UsageProfile, list_usage_profiles, usage_requirements
+from local_llm_router.requirements import UsageProfile, list_usage_profiles, usage_requirements
 
 
 def test_list_usage_profiles_includes_core():

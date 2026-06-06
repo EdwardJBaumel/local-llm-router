@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from split_stack.setup_wizard import (
+from local_llm_router.setup_wizard import (
     model_is_installed,
     plan_setup,
     run_setup,
@@ -16,7 +16,7 @@ def test_model_is_installed_matches_tag_prefix():
     assert not model_is_installed("qwen3:14b", installed)
 
 
-@patch("split_stack.setup_wizard.discover_models", return_value=["gemma4:e4b", "qwen3:8b"])
+@patch("local_llm_router.setup_wizard.discover_models", return_value=["gemma4:e4b", "qwen3:8b"])
 def test_plan_setup_reports_missing(_mock_discover):
     plan = plan_setup("workstation_12gb", config_path=Path("test-config.json"))
     assert plan.profile == "workstation_12gb"
@@ -24,10 +24,10 @@ def test_plan_setup_reports_missing(_mock_discover):
     assert "qwen3:14b" in plan.missing
 
 
-@patch("split_stack.setup_wizard.pull_model")
-@patch("split_stack.setup_wizard.discover_models", return_value=[])
+@patch("local_llm_router.setup_wizard.pull_model")
+@patch("local_llm_router.setup_wizard.discover_models", return_value=[])
 def test_run_setup_pulls_and_writes_config(_mock_discover, mock_pull, tmp_path):
-    config = tmp_path / "split-stack.models.json"
+    config = tmp_path / "local-llm-router.models.json"
     result = run_setup(
         "workstation_8gb",
         config_path=config,
@@ -40,9 +40,9 @@ def test_run_setup_pulls_and_writes_config(_mock_discover, mock_pull, tmp_path):
     assert '"deployment_profile": "workstation_8gb"' in config.read_text(encoding="utf-8")
 
 
-@patch("split_stack.setup_wizard.discover_models", return_value=["gemma4:e4b", "qwen3:8b", "qwen3:14b", "deepseek-r1:8b"])
+@patch("local_llm_router.setup_wizard.discover_models", return_value=["gemma4:e4b", "qwen3:8b", "qwen3:14b", "deepseek-r1:8b"])
 def test_run_setup_dry_run_no_pull(_mock_discover, tmp_path):
-    config = tmp_path / "split-stack.models.json"
+    config = tmp_path / "local-llm-router.models.json"
     result = run_setup(
         "workstation_12gb",
         config_path=config,
@@ -56,7 +56,7 @@ def test_run_setup_dry_run_no_pull(_mock_discover, tmp_path):
 
 
 def test_write_setup_config_sets_profile(tmp_path):
-    path = tmp_path / "split-stack.models.json"
+    path = tmp_path / "local-llm-router.models.json"
     write_setup_config("workstation_24gb", path)
     text = path.read_text(encoding="utf-8")
     assert "workstation_24gb" in text

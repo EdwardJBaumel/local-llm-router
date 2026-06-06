@@ -1,4 +1,4 @@
-from split_stack.benchmark import run_benchmark, routed_model_mix
+from local_llm_router.benchmark import run_benchmark, routed_model_mix
 
 
 def test_benchmark_routes_mixed_tiers():

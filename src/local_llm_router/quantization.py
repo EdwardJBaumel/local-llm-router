@@ -1,6 +1,6 @@
 """Quantization assumptions for VRAM sizing — not per-prompt routing.
 
-Ollama tags (``gemma4:e4b``) do not encode quant. ``quant=`` tells split-stack which
+Ollama tags (``gemma4:e4b``) do not encode quant. ``quant=`` tells local-llm-router which
 pull format you use so VRAM filters and QAT-aware stack suggestions stay honest.
 """
 
@@ -72,7 +72,7 @@ def normalize_quant_mode(name: str | None) -> str:
 
 
 def quant_from_env() -> str | None:
-    raw = os.environ.get("SPLIT_STACK_QUANT", "").strip()
+    raw = os.environ.get("local_llm_router_QUANT", "").strip()
     return raw or None
 
 

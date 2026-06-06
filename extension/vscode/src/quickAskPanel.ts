@@ -13,14 +13,14 @@ export interface AskResponse {
 }
 
 export async function runStackAsk(prompt: string): Promise<AskResponse> {
-  const config = vscode.workspace.getConfiguration("splitstack");
+  const config = vscode.workspace.getConfiguration("localLlmRouter");
   const pythonPath = config.get<string>("pythonPath", "python");
   const baseUrl = config.get<string>("ollamaBaseUrl", "http://127.0.0.1:11434");
 
   try {
     const { stdout } = await execFileAsync(
       pythonPath,
-      ["-m", "split_stack", "ask", "--prompt", prompt, "--json", "--base-url", baseUrl],
+      ["-m", "local_llm_router", "ask", "--prompt", prompt, "--json", "--base-url", baseUrl],
       { maxBuffer: 10 * 1024 * 1024, windowsHide: true }
     );
     return JSON.parse(stdout.trim()) as AskResponse;
@@ -31,7 +31,7 @@ export async function runStackAsk(prompt: string): Promise<AskResponse> {
       model: "",
       text: "",
       ready: false,
-      error: `Failed to run split-stack. Check pythonPath and pip install -e ".[ollama]". ${message}`,
+      error: `Failed to run local-llm-router. Check pythonPath and pip install -e ".[ollama]". ${message}`,
     };
   }
 }
@@ -48,8 +48,8 @@ export class QuickAskPanel {
     }
 
     const panel = vscode.window.createWebviewPanel(
-      "splitstackQuickAsk",
-      "Split Stack Quick Ask",
+      "localLlmRouterQuickAsk",
+      "Local LLM Router Quick Ask",
       vscode.ViewColumn.Beside,
       { enableScripts: true, retainContextWhenHidden: true }
     );
@@ -96,7 +96,7 @@ export class QuickAskPanel {
   </style>
 </head>
 <body>
-  <p>Local quick ask via split-stack + Ollama. Opens on demand — no chat interception.</p>
+  <p>Local quick ask via local-llm-router + Ollama. Opens on demand — no chat interception.</p>
   <textarea id="prompt" placeholder="Ask a work question..."></textarea>
   <br />
   <button id="ask">Ask</button>

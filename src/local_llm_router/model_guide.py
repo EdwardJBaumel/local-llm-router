@@ -4,16 +4,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from split_stack.community_picks import (
+from local_llm_router.community_picks import (
     community_index_for_model,
     community_note_for_model,
     recommended_models_for_tier,
     vram_tier_for_profile,
 )
-from split_stack.hints import list_hints
-from split_stack.model_registry import load_registry, resolve_discovered_models
-from split_stack.routing import route_prompt
-from split_stack.tiering import assign_tiers, describe_tiers
+from local_llm_router.hints import list_hints
+from local_llm_router.model_registry import load_registry, resolve_discovered_models
+from local_llm_router.routing import route_prompt
+from local_llm_router.tiering import assign_tiers, describe_tiers
 
 # Example prompts per hint — same spirit as compare POC steps.
 HINT_EXAMPLES: dict[str, str] = {
@@ -148,7 +148,7 @@ def build_model_guide(
 
     registry = load_registry(config_path)
     vram_tier = vram_tier_for_profile(profile, config_path=config_path)
-    from split_stack.discovery import audit_model_folders, model_locations_by_tag
+    from local_llm_router.discovery import audit_model_folders, model_locations_by_tag
 
     locations = model_locations_by_tag()
     audit = audit_model_folders()

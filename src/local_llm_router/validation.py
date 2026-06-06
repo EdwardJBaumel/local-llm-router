@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from split_stack.model_registry import load_registry, model_weight
-from split_stack.models import TierMap
-from split_stack.tiering import describe_tiers
+from local_llm_router.model_registry import load_registry, model_weight
+from local_llm_router.models import TierMap
+from local_llm_router.tiering import describe_tiers
 
 
 def _is_reasoning_specialist(name: str) -> bool:

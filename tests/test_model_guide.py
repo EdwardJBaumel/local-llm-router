@@ -1,4 +1,4 @@
-from split_stack.model_guide import build_model_guide
+from local_llm_router.model_guide import build_model_guide
 
 
 def test_build_model_guide_routes_hints_to_stack():

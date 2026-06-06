@@ -3,7 +3,7 @@ import { QuickAskPanel } from "./quickAskPanel";
 
 export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
-    vscode.commands.registerCommand("splitstack.quickAsk", () => {
+    vscode.commands.registerCommand("localLlmRouter.quickAsk", () => {
       QuickAskPanel.createOrShow(context.extensionUri);
     })
   );

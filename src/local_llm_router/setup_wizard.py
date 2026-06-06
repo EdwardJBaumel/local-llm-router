@@ -4,10 +4,10 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from split_stack.discovery import discover_models
-from split_stack.model_registry import normalize_deployment_profile
-from split_stack.presets import RECOMMENDED_STACKS, assign_recommended_tiers, list_recommended_stacks, recommended_models
-from split_stack.tiering import describe_tiers
+from local_llm_router.discovery import discover_models
+from local_llm_router.model_registry import normalize_deployment_profile
+from local_llm_router.presets import RECOMMENDED_STACKS, assign_recommended_tiers, list_recommended_stacks, recommended_models
+from local_llm_router.tiering import describe_tiers
 
 
 @dataclass(frozen=True)
@@ -42,7 +42,7 @@ def _repo_root() -> Path:
 
 
 def default_config_path() -> Path:
-    return Path.cwd() / "split-stack.models.json"
+    return Path.cwd() / "local-llm-router.models.json"
 
 
 def model_is_installed(tag: str, installed: list[str]) -> bool:
@@ -87,7 +87,7 @@ def pull_model(
         import requests
     except ImportError as exc:
         raise RuntimeError(
-            "pull_model requires optional dependency: pip install split-stack[ollama]"
+            "pull_model requires optional dependency: pip install local-llm-router[ollama]"
         ) from exc
 
     response = requests.post(

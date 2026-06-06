@@ -1,7 +1,7 @@
 {
-  "name": "split-stack-vscode",
-  "displayName": "Split Stack",
-  "description": "Transparent local quick-ask via split-stack routing and Ollama (VS Code and Cursor)",
+  "name": "local-llm-router-vscode",
+  "displayName": "Local LLM Router",
+  "description": "Transparent local quick-ask via local-llm-router routing and Ollama (VS Code and Cursor)",
   "version": "0.1.0",
   "publisher": "eddiebaumel",
   "license": "MIT",
@@ -12,25 +12,25 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:splitstack.quickAsk"
+    "onCommand:localLlmRouter.quickAsk"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "splitstack.quickAsk",
-        "title": "Split Stack: Quick Ask"
+        "command": "localLlmRouter.quickAsk",
+        "title": "Local LLM Router: Quick Ask"
       }
     ],
     "configuration": {
-      "title": "Split Stack",
+      "title": "Local LLM Router",
       "properties": {
-        "splitstack.pythonPath": {
+        "localLlmRouter.pythonPath": {
           "type": "string",
           "default": "python",
-          "description": "Python executable with split-stack installed"
+          "description": "Python executable with local-llm-router installed"
         },
-        "splitstack.ollamaBaseUrl": {
+        "localLlmRouter.ollamaBaseUrl": {
           "type": "string",
           "default": "http://127.0.0.1:11434",
           "description": "Ollama base URL for model discovery and generation"

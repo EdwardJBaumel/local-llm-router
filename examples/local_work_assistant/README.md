@@ -1,6 +1,6 @@
 # Local work assistant (perfect use case)
 
-This example shows the most practical use case for `split-stack`:
+This example shows the most practical use case for `local-llm-router`:
 
 - Keep Cursor native for agentic coding
 - Use local routing for direct work questions and script tasks
@@ -18,7 +18,7 @@ It gives the "auto model selection" feel without adding a paid proxy service.
 
 ## Run
 
-From the `split_stack` directory:
+From the `local_llm_router` directory:
 
 ```bash
 python -m pip install -e ".[ollama]"
@@ -35,7 +35,7 @@ python "examples/local_work_assistant/app.py" --prompt "design a retry strategy 
 ## What you will see
 
 1. Detected model tiers from Ollama tags
-2. Prompt complexity tier selected by `split_stack.route_prompt()`
+2. Prompt complexity tier selected by `local_llm_router.route_prompt()`
 3. Final model chosen for that tier
 4. Generated response from Ollama
 

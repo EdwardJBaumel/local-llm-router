@@ -1,18 +1,18 @@
 # Visual browser demo
 
-Local single-page demo for split-stack routing and the compare POC. **Demo only** — the product is the Python library.
+Local single-page demo for local-llm-router routing and the compare POC. **Demo only** — the product is the Python library.
 
 ## Run
 
 ```bash
-cd split-stack
+cd local-llm-router
 pip install -e ".[ollama]"
 python examples/demo_ui/server.py
 ```
 
 ## Start (Windows)
 
-From the split-stack repo:
+From the local-llm-router repo:
 
 ```powershell
 .\examples\demo_ui\start.ps1
@@ -38,7 +38,7 @@ Open **http://127.0.0.1:8765** and hard-refresh (Ctrl+F5) so `app.js?v=7` loads.
 
 **Stack bar:**
 
-- **GPU VRAM** (8 / 12 / 16 / 24 / 32 GB) — maps to the same profiles as `split_stack.configure(vram_gb=...)`
+- **GPU VRAM** (8 / 12 / 16 / 24 / 32 GB) — maps to the same profiles as `local_llm_router.configure(vram_gb=...)`
 - **Gemma quant** — `default`, `qat`, `qat_mobile`, or `bf16` (same as library `quant=` argument)
 - **Recommended stack** — chips from the library preset; dashed chips are not found on disk/API
 - **Custom stack** — optional comma-separated override for power users
@@ -58,7 +58,7 @@ $env:OLLAMA_MODELS = "$env:USERPROFILE\.ollama\models"
 # restart Ollama service/app, then ollama list should show all tags
 ```
 
-Or set `SPLIT_STACK_OLLAMA_MODELS` to that path for disk scan only (dry compare works without fixing Ollama).
+Or set `local_llm_router_OLLAMA_MODELS` to that path for disk scan only (dry compare works without fixing Ollama).
 
 **Hints:** `lookup`, `explain`, `design`, `code`, `reason` — same as compare POC.
 

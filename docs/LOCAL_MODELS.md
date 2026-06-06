@@ -1,13 +1,13 @@
-# Local models — what split-stack knows and what to add
+# Local models — what local-llm-router knows and what to add
 
-split-stack routes by **model name + weight**, not by provider API. If Ollama (or your gateway) can serve it, you can tier it.
+local-llm-router routes by **model name + weight**, not by provider API. If Ollama (or your gateway) can serve it, you can tier it.
 
 ## Three layers (how names get ranked)
 
 | Layer | When it runs | What it does |
 | --- | --- | --- |
 | **Built-in registry** | Default, no config file | Substring matches for common Ollama tags (`qwen3:8b`, `gemma4:e4b`, …) |
-| **Your config** | `split-stack.models.json` | Overrides/extends built-in rows; set `deployment_profile` |
+| **Your config** | `local-llm-router.models.json` | Overrides/extends built-in rows; set `deployment_profile` |
 | **Heuristics** | Unknown tag | Parses `:4b`, `:14b`, `:e4b`, `:30b-a3b` patterns; guesses family from name |
 
 You do **not** need a registry row for every pull. Heuristics cover most `family:size` tags well enough for tier ordering. Add explicit rows when:
@@ -54,7 +54,7 @@ stack stacks --profile workstation_24gb --json
 3. **Code slot** — refactor/debug/` ``` ` prompts on COMPLEX/MEDIUM use `tiers.code` when configured.
 
 ```python
-from split_stack import assign_recommended_tiers, route_prompt
+from local_llm_router import assign_recommended_tiers, route_prompt
 
 tiers = assign_recommended_tiers("workstation_16gb")
 route_prompt("what is caching?", tiers, hint="lookup")          # gemma4:e4b
@@ -120,7 +120,7 @@ Routing uses **prompt keywords** for tier (`step by step`, `design`, …), not m
 | **All Gemma** | Great small models | Fewer native large locals |
 | **Mixed** | Best model per tier | Slightly uneven “voice” across steps |
 
-split-stack only requires **two or more models with different weights** for routing to spread.
+local-llm-router only requires **two or more models with different weights** for routing to spread.
 
 ## Adding your own tags
 
@@ -154,7 +154,7 @@ stack route --prompt "your prompt" --json --models my-router,my-workhorse
 
 ## Gemma 4 QAT (Apr 2026)
 
-Quantization-aware training checkpoints for Gemma 4 (E2B, E4B, 12B, 26B-A4B, 31B). split-stack tracks **runtime GB** when you set `quant="qat"`:
+Quantization-aware training checkpoints for Gemma 4 (E2B, E4B, 12B, 26B-A4B, 31B). local-llm-router tracks **runtime GB** when you set `quant="qat"`:
 
 | Tag | QAT runtime (GB) | Default registry (GB) |
 | --- | --- | --- |

@@ -1,10 +1,10 @@
-from split_stack.advice import stack_recommendation
-from split_stack.benchmark import format_markdown_table, run_benchmark
-from split_stack.complexity import resolve_tier, score_prompt
-from split_stack.hints import list_hints, normalize_step_kind
-from split_stack.discovery import discover_models
-from split_stack.local_models import assign_tiers_from_local, list_local_models
-from split_stack.model_registry import (
+from local_llm_router.advice import stack_recommendation
+from local_llm_router.benchmark import format_markdown_table, run_benchmark
+from local_llm_router.complexity import resolve_tier, score_prompt
+from local_llm_router.hints import list_hints, normalize_step_kind
+from local_llm_router.discovery import discover_models
+from local_llm_router.local_models import assign_tiers_from_local, list_local_models
+from local_llm_router.model_registry import (
     DeploymentProfileSpec,
     ModelEntry,
     ModelRegistry,
@@ -13,20 +13,20 @@ from split_stack.model_registry import (
     model_weight,
     normalize_deployment_profile,
 )
-from split_stack.models import ComplexityTier, RouteDecision, StackAdvice, StepKind, TierMap
-from split_stack.presets import (
+from local_llm_router.models import ComplexityTier, RouteDecision, StackAdvice, StepKind, TierMap
+from local_llm_router.presets import (
     assign_recommended_tiers,
     list_recommended_stacks,
     recommended_models,
 )
-from split_stack.requirements import (
+from local_llm_router.requirements import (
     Prerequisite,
     ProfileRequirements,
     UsageProfile,
     list_usage_profiles,
     usage_requirements,
 )
-from split_stack.quantization import (
+from local_llm_router.quantization import (
     QUANT_MODES,
     adjust_vram_for_quant,
     expand_models_for_quant,
@@ -34,8 +34,8 @@ from split_stack.quantization import (
     pull_guidance_lines,
     quant_from_env,
 )
-from split_stack.routing import explain_route, route_prompt
-from split_stack.session import (
+from local_llm_router.routing import explain_route, route_prompt
+from local_llm_router.session import (
     Session,
     configure,
     default_profile_from_env,
@@ -46,10 +46,10 @@ from split_stack.session import (
     route,
     session_warnings,
 )
-from split_stack.stack_health import check_stack_health, format_stack_health
-from split_stack.startup_tips import emit_import_tips, model_recommendation_report
-from split_stack.tiering import assign_tiers, describe_tiers
-from split_stack.validation import validate_tier_map
+from local_llm_router.stack_health import check_stack_health, format_stack_health
+from local_llm_router.startup_tips import emit_import_tips, model_recommendation_report
+from local_llm_router.tiering import assign_tiers, describe_tiers
+from local_llm_router.validation import validate_tier_map
 
 __version__ = "0.3.1"
 
@@ -106,4 +106,4 @@ __all__ = [
     "__version__",
 ]
 
-# Embedded library use: no import-time stderr. Use ``stack tips`` or ``SPLIT_STACK_IMPORT_TIPS=on``.
+# Embedded library use: no import-time stderr. Use ``stack tips`` or ``local_llm_router_IMPORT_TIPS=on``.

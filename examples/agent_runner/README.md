@@ -1,13 +1,13 @@
 # Agent runner POC
 
-Shows how to wire split-stack into a **multi-step agent loop**: one routing call before each LLM step.
+Shows how to wire local-llm-router into a **multi-step agent loop**: one routing call before each LLM step.
 
 Full integration guide: [`docs/INTEGRATION.md`](../../docs/INTEGRATION.md)
 
 ## See all four API levels (dry run)
 
 ```bash
-cd split-stack
+cd local-llm-router
 python examples/agent_runner/patterns.py
 ```
 
