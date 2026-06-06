@@ -80,12 +80,13 @@ function Smoke-Test-TestPyPI {
     if (Test-Path $venv) { Remove-Item -Recurse -Force $venv }
     python -m venv $venv
     & "$venv\Scripts\python.exe" -m pip install -q --upgrade pip
+    $version = (python -c "import pathlib,re; m=re.search(r'^version = \"([^\"]+)\"', pathlib.Path('pyproject.toml').read_text(encoding='utf-8'), re.M); print(m.group(1) if m else '0.0.0')").Trim()
     & "$venv\Scripts\pip.exe" install -q `
         --index-url https://test.pypi.org/simple/ `
         --extra-index-url https://pypi.org/simple/ `
-        "local-llm-router==0.2.0"
+        "local-llm-router==$version"
     & "$venv\Scripts\python.exe" -c "import local_llm_router; print('version', local_llm_router.__version__)"
-    & "$venv\Scripts\stack.exe" route --prompt "what is JWT?" --hint lookup --json `
+    & "$venv\Scripts\llm-router.exe" route --prompt "what is JWT?" --mode chat --json `
         --models gemma4:e4b,qwen3:8b,qwen3:14b
     Write-Host "Smoke test OK" -ForegroundColor Green
 }
@@ -98,12 +99,13 @@ function Upload-PyPI {
 
 function Invoke-GitTag {
     if ($SkipGitTag) { return }
-    $tag = "v0.2.0"
+    $version = (python -c "import pathlib,re; m=re.search(r'^version = \"([^\"]+)\"', pathlib.Path('pyproject.toml').read_text(encoding='utf-8'), re.M); print(m.group(1) if m else '0.0.0')").Trim()
+    $tag = "v$version"
     Write-Host "==> git tag $tag (if missing) and push" -ForegroundColor Cyan
     git fetch origin 2>$null
     $exists = git tag -l $tag
     if (-not $exists) {
-        git tag -a $tag -m "Release local-llm-router 0.2.0"
+        git tag -a $tag -m "Release local-llm-router $version"
     }
     git push origin main
     git push origin $tag

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from local_llm_router.complexity import (
     looks_like_code,
+    looks_like_shell_work,
     resolve_tier,
     score_prompt,
 )
@@ -15,9 +16,10 @@ def route_prompt(
     tiers: TierMap,
     *,
     hint: str | StepKind | None = None,
+    mode: str | None = None,
 ) -> tuple[ComplexityTier, str]:
     """Return complexity tier and selected model for a prompt."""
-    return explain_route(prompt, tiers, hint=hint).as_tuple()
+    return explain_route(prompt, tiers, hint=hint, mode=mode).as_tuple()
 
 
 def explain_route(
@@ -25,6 +27,7 @@ def explain_route(
     tiers: TierMap,
     *,
     hint: str | StepKind | None = None,
+    mode: str | None = None,
 ) -> RouteDecision:
     """Return tier, model, and a trace of why routing chose them."""
     raw_hint = hint.value if isinstance(hint, StepKind) else hint
@@ -32,14 +35,26 @@ def explain_route(
     tier_source = "heuristic"
     reasons: list[str] = []
 
+    if mode:
+        reasons.append(f"mode={mode}")
+
     if hint is not None:
         step_kind = normalize_step_kind(hint)
-        tier = resolve_tier(prompt, hint=step_kind)
+        tier = resolve_tier(prompt, hint=step_kind, mode=mode)
         tier_source = "hint"
         reasons.append(f"hint={step_kind.value} maps to tier {tier.value}")
     else:
-        tier = score_prompt(prompt)
-        reasons.append(f"no hint — keyword/heuristic scoring → tier {tier.value}")
+        tier = score_prompt(prompt, mode=mode)
+        if looks_like_shell_work(prompt):
+            reasons.append("shell/bash marker → complex tier")
+        else:
+            reasons.append(f"keyword/heuristic scoring → tier {tier.value}")
+        if mode == "chat" and tier == ComplexityTier.MEDIUM:
+            if resolve_tier(prompt, mode="agent") in (
+                ComplexityTier.COMPLEX,
+                ComplexityTier.REASONING,
+            ) and not (looks_like_code(prompt) or looks_like_shell_work(prompt)):
+                reasons.append("mode=chat — capped complex/reasoning tier to medium")
         if len((prompt or "").split()) > 80:
             reasons.append("prompt length > 80 tokens influenced complex tier")
 
@@ -49,6 +64,8 @@ def explain_route(
         model_source = "code_slot"
         if prefer_code_model(hint) or step_kind == StepKind.CODE:
             reasons.append(f"code specialist {model} (hint={step_kind.value if step_kind else hint})")
+        elif looks_like_shell_work(prompt):
+            reasons.append(f"code specialist {model} (prompt looks like shell work)")
         else:
             reasons.append(f"code specialist {model} (prompt looks like code)")
     elif use_code and not tiers.code:
@@ -77,6 +94,7 @@ def explain_route(
         model_source=model_source,
         reasons=tuple(reasons),
         tiers=describe_tiers(tiers),
+        mode=mode,
     )
 
 
@@ -93,4 +111,4 @@ def _should_use_code_model(
         return False
     if tier not in (ComplexityTier.COMPLEX, ComplexityTier.MEDIUM):
         return False
-    return looks_like_code(prompt)
+    return looks_like_code(prompt) or looks_like_shell_work(prompt)

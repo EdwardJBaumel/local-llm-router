@@ -43,7 +43,10 @@ def profile_for_vram_gb(vram_gb: int) -> str:
 
 
 def _vram_from_env() -> int | None:
-    raw = os.environ.get("local_llm_router_VRAM_GB", "").strip()
+    raw = (
+        os.environ.get("local_llm_router_VRAM_GB", "")
+        or os.environ.get("SPLIT_STACK_VRAM_GB", "")  # deprecated alias
+    ).strip()
     if not raw:
         return None
     try:
@@ -54,7 +57,10 @@ def _vram_from_env() -> int | None:
 
 
 def _profile_from_env() -> str | None:
-    raw = os.environ.get("local_llm_router_PROFILE", "").strip()
+    raw = (
+        os.environ.get("local_llm_router_PROFILE", "")
+        or os.environ.get("SPLIT_STACK_PROFILE", "")  # deprecated alias
+    ).strip()
     return raw or None
 
 
@@ -221,24 +227,31 @@ def route(
     prompt: str,
     *,
     hint: str | None = None,
+    mode: str | None = None,
 ) -> tuple[ComplexityTier, str]:
     """Route one prompt using the configured session. Call ``configure()`` first."""
     session = _ensure_session()
-    return route_prompt(prompt, session.tiers, hint=hint)
+    return route_prompt(prompt, session.tiers, hint=hint, mode=mode)
 
 
 def explain(
     prompt: str,
     *,
     hint: str | None = None,
+    mode: str | None = None,
 ) -> RouteDecision:
     """Route with a full decision trace (logging, CLI, tests)."""
     session = _ensure_session()
-    return explain_route(prompt, session.tiers, hint=hint)
+    return explain_route(prompt, session.tiers, hint=hint, mode=mode)
+
+
+def route_turn(prompt: str, *, mode: str | None = None) -> tuple[ComplexityTier, str]:
+    """Alias for ``route(prompt, mode=mode)`` — one turn in chat or agent mode."""
+    return route(prompt, mode=mode)
 
 
 def describe_session() -> dict[str, object]:
-    """Snapshot of the active session for logs and ``stack explain`` without a prompt."""
+    """Snapshot of the active session for logs and ``llm-router explain`` without a prompt."""
     session = get_session()
     if session is None:
         return {"configured": False}

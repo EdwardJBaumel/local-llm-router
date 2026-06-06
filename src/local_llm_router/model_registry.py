@@ -196,13 +196,18 @@ def config_search_paths(explicit: str | None = None) -> list[Path]:
     paths: list[Path] = []
     if explicit:
         paths.append(Path(explicit))
-    env_path = os.environ.get("LOCAL_LLM_ROUTER_MODELS_CONFIG")
+    env_path = (
+        os.environ.get("LOCAL_LLM_ROUTER_MODELS_CONFIG")
+        or os.environ.get("SPLIT_STACK_MODELS_CONFIG")  # deprecated alias
+    )
     if env_path:
         paths.append(Path(env_path))
     paths.extend(
         [
             Path.cwd() / "local-llm-router.models.json",
+            Path.cwd() / "split-stack.models.json",  # deprecated filename
             Path.home() / ".config" / "local-llm-router" / "models.json",
+            Path.home() / ".config" / "split-stack" / "models.json",  # deprecated
         ]
     )
     return paths

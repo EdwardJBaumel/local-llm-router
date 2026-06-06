@@ -72,7 +72,7 @@ def model_recommendation_report(
             "  Starter agent stack: ollama pull gemma4:e4b && "
             "ollama pull qwen3:8b && ollama pull qwen3:14b"
         )
-        lines.append("  Then: stack models --include-disk")
+        lines.append("  Then: llm-router models --include-disk")
         return lines
 
     header = f"local-llm-router: {len(installed)} local model(s)"
@@ -126,7 +126,7 @@ def model_recommendation_report(
             f"{', '.join(duplicate_tags)} — keep one Ollama models directory."
         )
 
-    lines.append("  Commands: stack models --include-disk  |  stack tips  |  stack stacks")
+    lines.append("  Commands: llm-router models --include-disk  |  llm-router tips  |  llm-router stacks")
     return lines
 
 

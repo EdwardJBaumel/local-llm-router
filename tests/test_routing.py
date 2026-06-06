@@ -1,5 +1,14 @@
 from local_llm_router.models import ComplexityTier, StepKind, TierMap
-from local_llm_router.routing import route_prompt
+from local_llm_router.routing import explain_route, route_prompt
+
+
+_TIERS = TierMap(
+    simple="gemma4:e4b",
+    medium="qwen3:8b",
+    complex="qwen3:14b",
+    reasoning="qwen3:30b-a3b",
+    code="deepseek-coder:6.7b",
+)
 
 
 def test_route_prompt_returns_tier_and_model():
@@ -50,3 +59,34 @@ def test_route_prompt_code_hint():
     tier, model = route_prompt("hello", tiers, hint=StepKind.CODE)
     assert tier == ComplexityTier.COMPLEX
     assert model == "deepseek-coder:6.7b"
+
+
+def test_chat_mode_simple_pong():
+    tier, model = route_prompt("Reply with exactly: pong", _TIERS, mode="chat")
+    assert tier == ComplexityTier.SIMPLE
+    assert model == "gemma4:e4b"
+
+
+def test_agent_mode_simple_pong():
+    tier, model = route_prompt("Reply with exactly: pong", _TIERS, mode="agent")
+    assert tier == ComplexityTier.SIMPLE
+    assert model == "gemma4:e4b"
+
+
+def test_agent_mode_shell_work_complex():
+    tier, model = route_prompt("Use bash to list files", _TIERS, mode="agent")
+    assert tier == ComplexityTier.COMPLEX
+    assert model == "deepseek-coder:6.7b"
+
+
+def test_chat_mode_lookup_simple():
+    tier, model = route_prompt("what is JWT?", _TIERS, mode="chat")
+    assert tier == ComplexityTier.SIMPLE
+    assert model == "gemma4:e4b"
+
+
+def test_explain_includes_mode_in_reasons():
+    decision = explain_route("what is JWT?", _TIERS, mode="chat")
+    assert decision.mode == "chat"
+    assert any("mode=chat" in reason for reason in decision.reasons)
+

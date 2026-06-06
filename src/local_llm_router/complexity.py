@@ -38,16 +38,34 @@ DEFAULT_CODE_MARKERS = (
     "pytest",
     "```",
 )
+DEFAULT_SHELL_MARKERS = (
+    "bash",
+    "shell",
+    "terminal",
+    "command line",
+    "run ",
+    "execute ",
+    "list files",
+    "list the project root",
+    "directory",
+    "npm ",
+    "pip ",
+    "git ",
+    "cargo ",
+    "make ",
+    "pytest",
+)
 
 
-def score_prompt(prompt: str) -> ComplexityTier:
-    return resolve_tier(prompt)
+def score_prompt(prompt: str, *, mode: str | None = None) -> ComplexityTier:
+    return resolve_tier(prompt, mode=mode)
 
 
 def resolve_tier(
     prompt: str,
     *,
     hint: StepKind | str | None = None,
+    mode: str | None = None,
 ) -> ComplexityTier:
     step_kind = normalize_step_kind(hint) if hint is not None else None
     if step_kind is not None:
@@ -57,21 +75,46 @@ def resolve_tier(
     if not text:
         return ComplexityTier.SIMPLE
 
-    if any(marker in text for marker in DEFAULT_REASONING_MARKERS):
-        return ComplexityTier.REASONING
+    if looks_like_shell_work(prompt):
+        tier = ComplexityTier.COMPLEX
+    elif any(marker in text for marker in DEFAULT_REASONING_MARKERS):
+        tier = ComplexityTier.REASONING
+    elif any(marker in text for marker in DEFAULT_COMPLEX_MARKERS) or len(text.split()) > 80:
+        tier = ComplexityTier.COMPLEX
+    elif any(marker in text for marker in DEFAULT_MEDIUM_MARKERS):
+        tier = ComplexityTier.MEDIUM
+    elif len(text.split()) <= 8 and text.endswith("?"):
+        tier = ComplexityTier.SIMPLE
+    elif len(text.split()) > 25:
+        tier = ComplexityTier.MEDIUM
+    else:
+        tier = ComplexityTier.SIMPLE
 
-    token_like_count = len(text.split())
-    if token_like_count <= 8 and text.endswith("?"):
-        return ComplexityTier.SIMPLE
-    if any(marker in text for marker in DEFAULT_COMPLEX_MARKERS) or token_like_count > 80:
-        return ComplexityTier.COMPLEX
-    if any(marker in text for marker in DEFAULT_MEDIUM_MARKERS):
-        return ComplexityTier.MEDIUM
-    if token_like_count > 25:
-        return ComplexityTier.MEDIUM
-    return ComplexityTier.SIMPLE
+    return _apply_mode_cap(tier, prompt, mode)
+
+
+def _apply_mode_cap(
+    tier: ComplexityTier,
+    prompt: str,
+    mode: str | None,
+) -> ComplexityTier:
+    """In chat mode, cap heuristic tiers at MEDIUM unless shell/code is explicit."""
+    if mode != "chat":
+        return tier
+    if tier not in (ComplexityTier.COMPLEX, ComplexityTier.REASONING):
+        return tier
+    if looks_like_code(prompt) or looks_like_shell_work(prompt):
+        return tier
+    return ComplexityTier.MEDIUM
 
 
 def looks_like_code(prompt: str) -> bool:
     text = (prompt or "").lower()
     return any(marker in text for marker in DEFAULT_CODE_MARKERS)
+
+
+def looks_like_shell_work(prompt: str) -> bool:
+    text = (prompt or "").strip().lower()
+    if not text:
+        return False
+    return any(marker in text for marker in DEFAULT_SHELL_MARKERS)

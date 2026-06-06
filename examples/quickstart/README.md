@@ -1,4 +1,4 @@
-# Quickstart — feel the setup before you ship
+﻿# Quickstart — feel the setup before you ship
 
 15-minute hands-on tour: config profile → tier map → routing → benchmark → optional Ollama.
 
@@ -57,15 +57,15 @@ chmod +x examples/quickstart/try_it.sh
 ```bash
 cd local-llm-router
 pip install -e ".[ollama]"
-stack setup --profile workstation_12gb
+llm-router setup --profile workstation_12gb
 ```
 
-`stack setup` asks which preset to use (if omitted), shows missing models, **asks consent before download**, then writes `local-llm-router.models.json`.
+`llm-router setup` asks which preset to use (if omitted), shows missing models, **asks consent before download**, then writes `local-llm-router.models.json`.
 
 Non-interactive:
 
 ```bash
-stack setup --profile 12gb --yes
+llm-router setup --profile 12gb --yes
 ```
 
 ### 2. Point at the example config
@@ -103,17 +103,17 @@ You should see: profile line → tier map → four routed prompts → benchmark 
 
 ```bash
 python examples/quickstart/mini_app.py --tour --profile 32gb
-stack models --profile 24gb
+llm-router models --profile 24gb
 ```
 
 ### 5. CLI equivalents
 
 ```bash
-stack profiles
-stack doctor
-stack route --prompt "what is caching?" --json --models qwen3:4b,qwen3:8b,qwen3:14b
+llm-router profiles
+llm-router doctor
+llm-router route --prompt "what is caching?" --json --models qwen3:4b,qwen3:8b,qwen3:14b
 stack benchmark --markdown
-stack ask --prompt "what is caching?" --json --models qwen3:4b,qwen3:8b,qwen3:14b
+llm-router ask --prompt "what is caching?" --json --models qwen3:4b,qwen3:8b,qwen3:14b
 ```
 
 ### 6. Live generation
@@ -157,4 +157,4 @@ When satisfied:
 | `No models available` | Start Ollama; pull at least two models; check `--models` list |
 | Fewer than two models after filter | Raise profile (`--profile 16gb`) or use `datacenter` |
 | `requests` missing | `pip install -e ".[ollama]"` |
-| Windows emoji garble on `stack ask` | Use `--json` or `$env:PYTHONIOENCODING="utf-8"` |
+| Windows emoji garble on `llm-router ask` | Use `--json` or `$env:PYTHONIOENCODING="utf-8"` |

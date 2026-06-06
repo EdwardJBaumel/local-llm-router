@@ -1,4 +1,4 @@
-# For app authors
+﻿# For app authors
 
 **local-llm-router is a model picker for local LLM apps.** It does not run inference, chat, or tools. Your app still calls Ollama (or LM Studio, llama.cpp, etc.). local-llm-router only answers:
 
@@ -27,7 +27,7 @@ Use it when your app runs **more than one local model** and step difficulty vari
 pip install local-llm-router
 ```
 
-Optional Ollama helpers (`stack ask`, disk discovery):
+Optional Ollama helpers (`llm-router ask`, disk discovery):
 
 ```bash
 pip install "local-llm-router[ollama]"
@@ -114,7 +114,7 @@ local_llm_router.configure(
 Shell out to the CLI and parse JSON:
 
 ```bash
-stack route --prompt "what is JWT?" --hint lookup --json \
+llm-router route --prompt "what is JWT?" --hint lookup --json \
   --models gemma4:e4b,qwen3:8b,qwen3:14b
 ```
 

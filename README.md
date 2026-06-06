@@ -1,4 +1,4 @@
-# local-llm-router
+﻿# local-llm-router
 
 **A Python routing library for local LLM agent loops.**
 
@@ -10,7 +10,7 @@ Zero runtime dependencies. Works offline. No inference, no agent framework, no c
 
 ```bash
 pip install local-llm-router
-pip install "local-llm-router[ollama]"   # optional: Ollama discovery, stack ask
+pip install "local-llm-router[ollama]"   # optional: Ollama discovery, llm-router ask
 ```
 
 ## Quick start
@@ -37,7 +37,7 @@ tier, model = route_prompt(step.prompt, tiers, hint=step.hint)
 Check your stack before routing:
 
 ```bash
-stack doctor --check-stack --vram-gb 16 --quant qat
+llm-router doctor --check-stack --vram-gb 16 --quant qat
 ```
 
 **Integration guide:** [`docs/FOR_APP_AUTHORS.md`](docs/FOR_APP_AUTHORS.md) · [`docs/INTEGRATION.md`](docs/INTEGRATION.md)
@@ -49,7 +49,7 @@ stack doctor --check-stack --vram-gb 16 --quant qat
 | **`configure(vram_gb=..., quant=...)`** | Set GPU budget + Gemma quant assumption once |
 | **`route(prompt, hint=...)`** | Pick `(tier, model_name)` for one agent step |
 | **`assign_tiers` / `route_prompt`** | Same routing with your own tier map |
-| **`stack compare` / `stack benchmark`** | CLI evidence — dry by default |
+| **`llm-router compare` / `stack benchmark`** | CLI evidence — dry by default |
 
 Step hints: `lookup`, `explain`, `design`, `code`, `reason` — override keyword scoring when you know the agent phase.
 
@@ -76,7 +76,7 @@ Clone the repo only if you want demos or to contribute:
 | Example | Command |
 | --- | --- |
 | Agent runner | `python examples/agent_runner/run.py` |
-| Compare POC | `stack compare` |
+| Compare POC | `llm-router compare` |
 | Browser demo | `python examples/demo_ui/server.py` → http://127.0.0.1:8765 |
 | Quickstart tour | `examples/quickstart/try_it.ps1` |
 
@@ -89,7 +89,7 @@ git clone https://github.com/edwardjbaumel/local-llm-router.git
 cd local-llm-router
 pip install -e ".[dev,ollama]"
 pytest
-stack setup --profile 12gb --dry-run
+llm-router setup --profile 12gb --dry-run
 ```
 
 Docs: [`docs/PUBLISHING.md`](docs/PUBLISHING.md) · [`docs/SECURITY.md`](docs/SECURITY.md) · [`docs/BACKLOG.md`](docs/BACKLOG.md)

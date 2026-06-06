@@ -536,7 +536,7 @@ def _add_ollama_args(parser: argparse.ArgumentParser) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="stack", description="local-llm-router helper CLI")
+    parser = argparse.ArgumentParser(prog="llm-router", description="local-llm-router helper CLI")
     subparsers = parser.add_subparsers(dest="command")
 
     doctor_parser = subparsers.add_parser("doctor", help="Show stack advice and optional Ollama tiers")

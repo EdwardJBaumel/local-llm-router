@@ -1,4 +1,4 @@
-# Agent runner POC
+﻿# Agent runner POC
 
 Shows how to wire local-llm-router into a **multi-step agent loop**: one routing call before each LLM step.
 
@@ -52,7 +52,7 @@ python examples/agent_runner/run.py --live --models gemma4:e4b,qwen3:8b,qwen3:14
 
 ```bash
 python examples/poc_compare/run.py
-stack compare
+llm-router compare
 ```
 
 Browser UI: `python examples/demo_ui/server.py`

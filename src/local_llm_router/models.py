@@ -11,6 +11,11 @@ class ComplexityTier(str, Enum):
     REASONING = "reasoning"
 
 
+class RouteMode(str, Enum):
+    CHAT = "chat"
+    AGENT = "agent"
+
+
 class StepKind(str, Enum):
     LOOKUP = "lookup"
     EXPLAIN = "explain"
@@ -52,6 +57,7 @@ class RouteDecision:
     model_source: str
     reasons: tuple[str, ...]
     tiers: dict[str, str | None]
+    mode: str | None = None
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -63,6 +69,7 @@ class RouteDecision:
             "model_source": self.model_source,
             "reasons": list(self.reasons),
             "tiers": self.tiers,
+            "mode": self.mode,
         }
 
     def as_tuple(self) -> tuple[ComplexityTier, str]:

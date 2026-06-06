@@ -1,4 +1,4 @@
-# Publishing local-llm-router to PyPI
+﻿# Publishing local-llm-router to PyPI
 
 Checklist to ship `pip install local-llm-router` so other local LLM apps can depend on it.
 
@@ -84,7 +84,7 @@ Install from TestPyPI in a fresh venv:
 ```bash
 pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ local-llm-router
 python -c "import local_llm_router; print(local_llm_router.__version__ if hasattr(local_llm_router,'__version__') else 'ok')"
-stack route --prompt "what is JWT?" --hint lookup --json --models gemma4:e4b,qwen3:8b,qwen3:14b
+llm-router route --prompt "what is JWT?" --hint lookup --json --models gemma4:e4b,qwen3:8b,qwen3:14b
 ```
 
 Fix any packaging errors before real PyPI.
@@ -133,7 +133,7 @@ Publishing alone is not marketing. Point authors to:
 | **Integrations doc** | LiteLLM, CLI JSON for non-Python |
 | **Related projects** | Footer link from Local Recruiting Ops / your local LLM POC when you add mixed-step chat |
 
-Other local LLM apps do **not** auto-import libraries. Authors add a dependency and three lines of code — or call `stack route --json` from any language.
+Other local LLM apps do **not** auto-import libraries. Authors add a dependency and three lines of code — or call `llm-router route --json` from any language.
 
 ---
 

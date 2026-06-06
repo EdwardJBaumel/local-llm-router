@@ -1,4 +1,4 @@
-# Datacenter deployment
+﻿# Datacenter deployment
 
 local-llm-router is builder-first: it picks a model **name** from your catalog. Your gateway or inference service generates text. Workstation users get VRAM presets; datacenter teams bring a custom catalog.
 
@@ -32,27 +32,27 @@ Minimum shape:
 }
 ```
 
-`match` is a substring on discovered model names. `weight` ranks tiers (higher = bigger). Add `vram_gb` if you want documentation in `stack models` output; it does not affect routing.
+`match` is a substring on discovered model names. `weight` ranks tiers (higher = bigger). Add `vram_gb` if you want documentation in `llm-router models` output; it does not affect routing.
 
 ## CLI
 
 ```bash
-stack profiles
-stack models --profile datacenter
-stack doctor --profile datacenter
+llm-router profiles
+llm-router models --profile datacenter
+llm-router doctor --profile datacenter
 ```
 
 With a datacenter config file, profile is inferred automatically:
 
 ```bash
-stack models --json
+llm-router models --json
 ```
 
 ## Wiring inference
 
 local-llm-router does not call your datacenter API directly. Typical pattern:
 
-1. `stack route --prompt "..." --json --models prod-small,prod-large,...`
+1. `llm-router route --prompt "..." --json --models prod-small,prod-large,...`
 2. Pass `model` from JSON into LiteLLM, an OpenAI-compatible client, or your gateway
 3. See [`integrations/litellm.md`](integrations/litellm.md) for a router recipe
 
@@ -76,5 +76,5 @@ Dual-GPU, A6000, Apple unified 48 GB+ and fleet cards: no preset. Use `datacente
 Override on the CLI without editing config:
 
 ```bash
-stack models --profile workstation_16gb
+llm-router models --profile workstation_16gb
 ```

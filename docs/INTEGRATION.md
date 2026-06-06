@@ -1,4 +1,4 @@
-# Integrating local-llm-router
+﻿# Integrating local-llm-router
 
 local-llm-router is a **routing library**: it picks `(tier, model_tag)` before each LLM call. It does not run inference, tools, or memory.
 
@@ -11,7 +11,7 @@ Both paths call the same `explain_route()` core. Pick based on who owns the mode
 | **Session (embedded)** | App devs | `configure()` once | `route()` / `explain()` |
 | **Explicit (power user)** | Gateways, tests | `assign_tiers(models)` | `route_prompt()` / `explain_route()` |
 
-**Embedded apps:** import is silent by default. Use `stack tips` in dev, or `local_llm_router_IMPORT_TIPS=on` for one-time stderr tips.
+**Embedded apps:** import is silent by default. Use `llm-router tips` in dev, or `local_llm_router_IMPORT_TIPS=on` for one-time stderr tips.
 
 ### Progressive disclosure (same session API)
 
@@ -88,7 +88,7 @@ tier, model = route(step.prompt, hint="code")
 Or CLI:
 
 ```bash
-stack explain --prompt "what is JWT?" --hint lookup --profile workstation_16gb --quant qat --json
+llm-router explain --prompt "what is JWT?" --hint lookup --profile workstation_16gb --quant qat --json
 ```
 
 ---
@@ -165,8 +165,8 @@ Your orchestrator should set `hint=` when it knows the step type. Without hints,
 ```bash
 pip install -e ".[ollama]"
 
-stack stacks --profile workstation_16gb --quant qat
-stack explain --prompt "what is JWT?" --hint lookup \
+llm-router stacks --profile workstation_16gb --quant qat
+llm-router explain --prompt "what is JWT?" --hint lookup \
   --models gemma4:e4b,qwen3:8b,qwen3:14b --json
 
 python examples/agent_runner/run.py --verbose --vram-gb 16 --quant qat \

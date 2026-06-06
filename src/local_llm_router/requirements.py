@@ -191,11 +191,11 @@ def _catalog() -> dict[UsageProfile, tuple[Prerequisite, ...]]:
             ),
             Prerequisite(
                 id="local_llm_router",
-                description="local-llm-router package installed (includes stack CLI)",
+                description="local-llm-router package installed (includes llm-router CLI)",
                 kind="package",
                 required=True,
                 install_command="python -m pip install local-llm-router",
-                verify_hint="stack doctor",
+                verify_hint="llm-router doctor",
             ),
             Prerequisite(
                 id="requests",
@@ -232,7 +232,7 @@ _PROFILE_META: dict[UsageProfile, tuple[str, str]] = {
     ),
     UsageProfile.CLI_DOCTOR: (
         "CLI doctor",
-        "Run stack doctor for local-llm-router guidance and optional Ollama tier output.",
+        "Run llm-router doctor for local-llm-router guidance and optional Ollama tier output.",
     ),
 }
 

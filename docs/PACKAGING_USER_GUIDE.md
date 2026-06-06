@@ -1,4 +1,4 @@
-# Using local-llm-router (pip install guide)
+﻿# Using local-llm-router (pip install guide)
 
 For **app developers** who want `pip install local-llm-router` — not for publishing to PyPI.
 
@@ -8,7 +8,7 @@ For **app developers** who want `pip install local-llm-router` — not for publi
 pip install local-llm-router
 ```
 
-With Ollama helpers (`stack ask`, model discovery):
+With Ollama helpers (`llm-router ask`, model discovery):
 
 ```bash
 pip install "local-llm-router[ollama]"
@@ -26,7 +26,7 @@ Requires **Python 3.10+**. No GPU required for routing (dry picks only).
 
 ```bash
 python -c "import local_llm_router; print(local_llm_router.__version__)"
-stack route --prompt "what is JWT?" --hint lookup --json \
+llm-router route --prompt "what is JWT?" --hint lookup --json \
   --models gemma4:e4b,qwen3:8b,qwen3:14b
 ```
 

@@ -1,4 +1,4 @@
-# Local models — what local-llm-router knows and what to add
+﻿# Local models — what local-llm-router knows and what to add
 
 local-llm-router routes by **model name + weight**, not by provider API. If Ollama (or your gateway) can serve it, you can tier it.
 
@@ -28,11 +28,11 @@ You do **not** need a registry row for every pull. Heuristics cover most `family
 | **DeepSeek** | `deepseek-r1`, `deepseek-coder-v2` | Reasoning/code; map reasoning tier carefully |
 | **Code** | `codellama`, `starcoder2`, `qwen2.5-coder` | Agent code steps; often medium/complex only |
 
-Run `stack models` to see how **your** installed tags resolve (`registry` vs `heuristic` column).
+Run `llm-router models` to see how **your** installed tags resolve (`registry` vs `heuristic` column).
 
 ## Suggested stacks by VRAM preset
 
-Canonical **mixed specialist** stacks ship in code (`stack stacks`). Philosophy: **Gemma min, Qwen spine, coder on code, R1/MoE on reasoning**. Beyond 32 GB → custom config or `datacenter`.
+Canonical **mixed specialist** stacks ship in code (`llm-router stacks`). Philosophy: **Gemma min, Qwen spine, coder on code, R1/MoE on reasoning**. Beyond 32 GB → custom config or `datacenter`.
 
 | Profile | Models to pull | Tier assignment |
 | --- | --- | --- |
@@ -43,8 +43,8 @@ Canonical **mixed specialist** stacks ship in code (`stack stacks`). Philosophy:
 | **32 GB** | 24 GB stack + `deepseek-r1:8b` | separate reasoning + code specialists |
 
 ```bash
-stack stacks
-stack stacks --profile workstation_24gb --json
+llm-router stacks
+llm-router stacks --profile workstation_24gb --json
 ```
 
 ### Routing logic (v0.2)
@@ -65,7 +65,7 @@ route_prompt("prove policy step by step", tiers, hint="reason")  # deepseek-r1
 CLI:
 
 ```bash
-stack route --prompt "refactor auth module" --hint code --models gemma4:e4b,qwen3:14b,deepseek-coder:6.7b
+llm-router route --prompt "refactor auth module" --hint code --models gemma4:e4b,qwen3:14b,deepseek-coder:6.7b
 ```
 
 These are **starting points**, not requirements. One family end-to-end is fine.
@@ -141,8 +141,8 @@ Minimal config snippet:
 Verify:
 
 ```bash
-stack models --json
-stack route --prompt "your prompt" --json --models my-router,my-workhorse
+llm-router models --json
+llm-router route --prompt "your prompt" --json --models my-router,my-workhorse
 ```
 
 ## What we deliberately do not built-in
@@ -165,7 +165,7 @@ Quantization-aware training checkpoints for Gemma 4 (E2B, E4B, 12B, 26B-A4B, 31B
 
 Sources: [Google Q4_0 collection](https://huggingface.co/collections/google/gemma-4-qat-q4_0), [Unsloth QAT analysis](https://unsloth.ai/docs/models/gemma-4/qat#qat-analysis) (prefer **UD-Q4_K_XL** over naive Q4_0 for llama.cpp), [mobile mixture](https://huggingface.co/collections/google/gemma-4-qat-mobile) (`quant="qat_mobile"`).
 
-**Wrong use:** lowering model weight because Q4 is smaller — that sends complex prompts to the lookup slot. **Right use:** `quant="qat"` so `stack doctor` and `configure()` know `26b-a4b` fits 16 GB.
+**Wrong use:** lowering model weight because Q4 is smaller — that sends complex prompts to the lookup slot. **Right use:** `quant="qat"` so `llm-router doctor` and `configure()` know `26b-a4b` fits 16 GB.
 
 ## See also
 

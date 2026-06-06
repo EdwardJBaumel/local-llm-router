@@ -1,4 +1,4 @@
-# Compare POC
+﻿# Compare POC
 
 Side-by-side proof: **local-llm-router routing** vs **always use the largest model** on the same 5-step agent loop.
 
@@ -14,7 +14,7 @@ python examples/poc_compare/run.py
 Or via CLI:
 
 ```bash
-stack compare
+llm-router compare
 ```
 
 | Hint | Tier | Use for |
@@ -47,7 +47,7 @@ Summary:
 ```bash
 pip install -e ".[ollama]"
 python examples/poc_compare/run.py --live --models qwen3:4b,qwen3:8b,qwen3:14b
-stack compare --live
+llm-router compare --live
 ```
 
 Runs each step twice (routed model, then baseline) and prints per-step and total latency. If a model is missing, you get a fix hint (`ollama pull …`) instead of a raw HTTP traceback.
@@ -66,5 +66,5 @@ See [`../demo_ui/README.md`](../demo_ui/README.md).
 
 ```bash
 python examples/poc_compare/run.py --json
-stack compare --json
+llm-router compare --json
 ```

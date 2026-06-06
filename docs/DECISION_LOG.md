@@ -1,4 +1,4 @@
-# Decision log
+﻿# Decision log
 
 This file captures core product and architecture decisions for portfolio context and future onboarding.
 
@@ -83,7 +83,7 @@ Ship one repo with Python library (`src/local_llm_router/`) and an optional pull
 
 ### Why
 - Library is the product; extension proves routing without duplicating logic
-- Extension consumes library via `stack ask --json` (no duplicated routing logic in TypeScript)
+- Extension consumes library via `llm-router ask --json` (no duplicated routing logic in TypeScript)
 - Builders integrate via imports; extension is a secondary demo path
 
 ### Tradeoff

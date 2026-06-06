@@ -1,4 +1,4 @@
-# LiteLLM integration recipe
+﻿# LiteLLM integration recipe
 
 local-llm-router does not ship a LiteLLM plugin. Add a **custom router** in your gateway in ~15 lines.
 
@@ -40,7 +40,7 @@ def pick_model_for_messages(messages: list[dict]) -> str:
 ## What this gives you
 
 - Transparent tier routing owned in your codebase
-- Same heuristics as `stack route --json`
+- Same heuristics as `llm-router route --json`
 - No Cursor chat interception (keep IDE agents native)
 
 ## What this does not give you
@@ -51,7 +51,7 @@ def pick_model_for_messages(messages: list[dict]) -> str:
 ## Verify routing without LiteLLM
 
 ```bash
-stack route --prompt "design webhook retries" --json --models qwen3:4b,qwen3:8b,qwen3:14b
+llm-router route --prompt "design webhook retries" --json --models qwen3:4b,qwen3:8b,qwen3:14b
 ```
 
 See also: [`examples/agent_runner/run.py`](../examples/agent_runner/run.py)

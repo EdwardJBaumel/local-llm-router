@@ -1,4 +1,4 @@
-# Visual browser demo
+﻿# Visual browser demo
 
 Local single-page demo for local-llm-router routing and the compare POC. **Demo only** — the product is the Python library.
 
@@ -80,7 +80,7 @@ Or set `local_llm_router_OLLAMA_MODELS` to that path for disk scan only (dry com
 | `GET /api/compare?...&live=1` | Live compare (502 + error if Ollama fails) |
 | `POST /api/route` | `{prompt, vram_gb?, quant?, source?, models?, hint?}` |
 
-CLI equivalent: `stack compare` — see [`../poc_compare/README.md`](../poc_compare/README.md).
+CLI equivalent: `llm-router compare` — see [`../poc_compare/README.md`](../poc_compare/README.md).
 
 ## Options
 
