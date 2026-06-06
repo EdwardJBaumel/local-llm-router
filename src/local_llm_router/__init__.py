@@ -43,6 +43,7 @@ from local_llm_router.session import (
     explain,
     get_session,
     profile_for_vram_gb,
+    reset_session_for_tests,
     route,
     session_warnings,
 )
@@ -93,6 +94,7 @@ __all__ = [
     "pull_guidance_lines",
     "quant_from_env",
     "recommended_models",
+    "reset_session_for_tests",
     "route",
     "route_prompt",
     "resolve_tier",

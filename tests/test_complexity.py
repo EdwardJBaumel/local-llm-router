@@ -26,3 +26,11 @@ def test_resolve_tier_respects_hints():
 def test_legacy_work_build_aliases():
     assert normalize_step_kind("work") == StepKind.EXPLAIN
     assert normalize_step_kind("build") == StepKind.DESIGN
+
+
+def test_code_shaped_prompt_not_simple_tier():
+    from local_llm_router.complexity import looks_like_code
+
+    prompt = "write a python function to merge two sorted lists"
+    assert looks_like_code(prompt)
+    assert score_prompt(prompt) == ComplexityTier.MEDIUM

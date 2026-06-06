@@ -90,6 +90,12 @@ def resolve_tier(
     else:
         tier = ComplexityTier.SIMPLE
 
+    # Code-shaped prompts (function/implement/pytest/```) need at least medium so
+    # routing can select the code specialist; otherwise they stay "simple" and
+    # never reach the code slot (e.g. "write a python function to merge lists").
+    if tier == ComplexityTier.SIMPLE and looks_like_code(prompt):
+        tier = ComplexityTier.MEDIUM
+
     return _apply_mode_cap(tier, prompt, mode)
 
 
