@@ -1,0 +1,141 @@
+{
+  "source": "r/LocalLLaMA — Best Local LLMs megathread (Apr 2026)",
+  "source_url": "https://www.reddit.com/r/LocalLLaMA/",
+  "vram_tiers": {
+    "S": "<8 GB VRAM",
+    "M": "8–32 GB VRAM",
+    "L": "32–64 GB VRAM",
+    "XL": "64–128 GB VRAM",
+    "U": ">128 GB VRAM"
+  },
+  "profile_to_vram_tier": {
+    "workstation_8gb": "S",
+    "workstation_12gb": "M",
+    "workstation_16gb": "M",
+    "workstation_24gb": "L",
+    "workstation_32gb": "L",
+    "datacenter": "XL"
+  },
+  "focus_stacks": {
+    "agentic": {
+      "label": "Agent loops / coding (Reddit consensus)",
+      "description": "Reliable tool use beats flashy prose. Qwen spine + small Gemma lookup is the M-tier pattern.",
+      "by_vram": {
+        "S": ["gemma4:e4b", "qwen3:8b"],
+        "M": ["gemma4:e4b", "qwen3:8b", "qwen3:14b"],
+        "L": ["gemma4:e4b", "qwen3:8b", "qwen3:14b", "qwen3:30b-a3b"],
+        "XL": ["qwen3:8b", "qwen3:14b", "qwen3:30b-a3b"]
+      }
+    },
+    "agentic_moe": {
+      "label": "Agentic MoE (8 GB+ with RAM offload)",
+      "description": "Qwen3.5 35B-A3B is the most cited MoE for coding/agents on one GPU + system RAM.",
+      "by_vram": {
+        "S": ["qwen3.5:35b-a3b"],
+        "M": ["qwen3.5:35b-a3b", "gemma4:e4b"],
+        "L": ["qwen3.5:35b-a3b", "qwen3:14b"]
+      }
+    },
+    "creative": {
+      "label": "Creative writing / RP (different stack)",
+      "description": "Megathread favors large Gemma 4 for prose — not the same ladder as agent coding.",
+      "by_vram": {
+        "M": ["gemma4:26b", "gemma4:e4b"],
+        "L": ["gemma4:26b", "gemma3:12b"],
+        "XL": ["gemma4:26b", "minimax-m2.7"]
+      }
+    }
+  },
+  "hints": {
+    "lookup": {
+      "reddit_category": "General",
+      "picks": {
+        "S": [
+          {"model": "gemma4:e4b", "note": "Efficiency-tier daily driver; with QAT int4 (~5 GB) use configure(quant='qat'). Prefer Unsloth UD-Q4_K_XL over naive Google Q4_0 for llama.cpp."},
+          {"model": "llama3.2:3b", "note": "Ultra-light facts and definitions."},
+          {"model": "qwen3:4b", "note": "Small general Q&A when Gemma unavailable."}
+        ],
+        "M": [
+          {"model": "gemma4:e4b", "note": "Most cited small model; QAT int4 pull (~5 GB runtime) unlocks bigger Gemma tiers on same VRAM."},
+          {"model": "llama3.2:3b", "note": "Smallest slot in mixed ladders."},
+          {"model": "qwen3:4b", "note": "Qwen-only ladder minimum."}
+        ],
+        "L": [
+          {"model": "gemma4:e4b", "note": "Still used as fast tier even on large rigs."}
+        ]
+      }
+    },
+    "explain": {
+      "reddit_category": "General",
+      "picks": {
+        "M": [
+          {"model": "qwen3:8b", "note": "Default mid tier — summarise, compare, outline."},
+          {"model": "qwen3.5:27b", "note": "Daily driver for many 3090 users; thinking off for speed."},
+          {"model": "gemma4:e4b", "note": "Works but community notes Gemma can be terse unless prompted hard."}
+        ],
+        "L": [
+          {"model": "qwen3.5:27b", "note": "Hybrid attention; strong through long agent context."},
+          {"model": "qwen3:14b", "note": "Dense mid-large without MoE parsing pain."}
+        ]
+      }
+    },
+    "design": {
+      "reddit_category": "Agentic / planning",
+      "picks": {
+        "M": [
+          {"model": "qwen3:14b", "note": "Complex tier in mixed 12 GB stacks."},
+          {"model": "qwen3:30b-a3b", "note": "MoE top tier when VRAM allows partial GPU load."},
+          {"model": "qwen3.5:27b", "note": "Single-GPU complex step on 24 GB class cards."}
+        ],
+        "L": [
+          {"model": "qwen3.5:122b-a10b", "note": "Cited for agentic tool use at XL-ish RAM."},
+          {"model": "qwen3:30b-a3b", "note": "MoE without full 30B dense VRAM."}
+        ]
+      }
+    },
+    "code": {
+      "reddit_category": "Agentic coding / tool use",
+      "picks": {
+        "M": [
+          {"model": "qwen3.5:27b", "note": "Reddit daily driver on 3090 — pull when Ollama ships tag; use qwen3:14b meanwhile."},
+          {"model": "qwen3.5:35b-a3b", "note": "MoE coding agent — pull when available; qwen3:30b-a3b is close."},
+          {"model": "qwen3:14b", "note": "Available now — reliable complex/code fallback."},
+          {"model": "gemma4:26b-a4b", "note": "QAT int4 ~15 GB — fits 16 GB cards; added to stack when quant=qat."},
+          {"model": "gemma4:26b", "note": "Fast MoE coding; some report agent crashes on long runs."}
+        ],
+        "S": [
+          {"model": "qwen3.5:35b-a3b", "note": "Surprise winner on 8 GB + large system RAM."}
+        ]
+      }
+    },
+    "reason": {
+      "reddit_category": "Speciality / reasoning",
+      "picks": {
+        "M": [
+          {"model": "phi4-reasoning:14b", "note": "Local reasoning specialist on 12–16 GB."},
+          {"model": "deepseek-r1:8b", "note": "Reasoning tier in split-stack 12 GB preset."},
+          {"model": "qwen3:14b", "note": "Fallback when no R1/Phi pulled."}
+        ],
+        "L": [
+          {"model": "deepseek-r1:8b", "note": "Separate reasoning slot in large mixed stacks."},
+          {"model": "minimax-m2.7", "note": "Cited for long-context agent memory (slow locally)."}
+        ]
+      }
+    }
+  },
+  "not_in_agent_stack": {
+    "creative_rp": {
+      "reddit_category": "Creative writing / RP",
+      "picks": {
+        "M": [
+          {"model": "gemma4:26b", "note": "Megathread favorite for prose and context coherence."},
+          {"model": "gemma4:26b-a4b", "note": "MoE variant; fast but different from agent ladder."}
+        ],
+        "L": [
+          {"model": "gemma4:26b", "note": "Often retires older 31B/70B RP models."},
+          {"model": "minimax-m2.7", "note": "Long-context character work at XL RAM."}
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "deployment_profile": "datacenter",
+  "comment": "Replace models[] with your private fleet tags. VRAM filtering is off; weights drive tier assignment only.",
+  "models": [
+    { "match": "internal-fast", "weight": 4000, "family": "custom" },
+    { "match": "internal-balanced", "weight": 14000, "family": "custom" },
+    { "match": "internal-reasoning", "weight": 70000, "family": "custom" }
+  ]
+}

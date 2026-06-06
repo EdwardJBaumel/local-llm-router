@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>split-stack demo</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <h1>split-stack</h1>
+    <p class="tagline">Pick the right local model for each agent step</p>
+    <p class="note">Browser demo for the Python library — not a chat app.</p>
+  </header>
+
+  <main>
+    <section class="panel guide-panel" id="guide-section">
+      <div class="panel-head">
+        <div>
+          <h2>What model for what task</h2>
+          <p class="intro">Your agent loop tags each step (<code>lookup</code>, <code>explain</code>, …). Split-stack maps that to a tier, then picks a model from your stack.</p>
+        </div>
+      </div>
+
+      <div class="stack-controls controls">
+        <label>
+          Model source
+          <select id="source-select">
+            <option value="both">API + disk manifests</option>
+            <option value="disk">Disk manifests only</option>
+            <option value="api">Ollama API only</option>
+          </select>
+        </label>
+        <label>
+          Stack preset
+          <select id="preset-select"></select>
+        </label>
+        <label class="models-field">
+          Your stack (comma-separated)
+          <input id="models-input" type="text" value="gemma4:e4b,qwen3:8b,qwen3:14b" size="42">
+        </label>
+      </div>
+      <p id="preset-note" class="status muted"></p>
+      <p id="guide-note" class="status muted">Loading guide…</p>
+
+      <h3 class="guide-heading">Tier ladder</h3>
+      <div id="tier-strip" class="tier-strip">
+        <p class="placeholder">Loading…</p>
+      </div>
+
+      <h3 class="guide-heading">Agent step types</h3>
+      <div id="hint-matrix" class="hint-matrix">
+        <p class="placeholder">Loading…</p>
+      </div>
+
+      <h3 class="guide-heading">Your models <span id="community-tier-label" class="muted-inline"></span></h3>
+      <p id="community-source" class="status muted"></p>
+      <p id="inventory-audit" class="status muted"></p>
+      <div id="model-cards" class="model-cards">
+        <p class="placeholder">Loading…</p>
+      </div>
+    </section>
+
+    <section class="panel" id="compare-section">
+      <div class="panel-head">
+        <div>
+          <h2>Savings demo</h2>
+          <p class="intro">Walks through a fake 5-step agent loop. <strong>Routed</strong> = split-stack picks a model per step. <strong>Baseline</strong> = always your largest model. Dry run needs no Ollama — it only shows routing.</p>
+        </div>
+        <div class="controls">
+          <label class="toggle">
+            <input id="live-toggle" type="checkbox">
+            Live Ollama (slow)
+          </label>
+          <button id="run-compare" type="button">Run savings demo</button>
+        </div>
+      </div>
+      <p id="compare-status" class="status">Dry run — instant routing, no inference.</p>
+      <div id="summary-strip" class="summary-strip hidden"></div>
+      <div id="step-grid" class="step-grid"></div>
+      <div id="latency-section" class="latency-section hidden">
+        <h3>Latency (live)</h3>
+        <div id="latency-bars"></div>
+        <p id="latency-totals" class="latency-totals"></p>
+      </div>
+    </section>
+
+    <section class="panel" id="route-section">
+      <h2>Try one prompt</h2>
+      <p class="intro">Type any prompt and see which model would run.</p>
+      <div class="route-form">
+        <textarea id="prompt-input" rows="3">what is caching?</textarea>
+        <div class="route-controls">
+          <label>
+            Step hint
+            <select id="hint-select">
+              <option value="">auto (text heuristics)</option>
+            </select>
+          </label>
+          <button id="run-route" type="button">Route</button>
+        </div>
+      </div>
+      <div id="route-result" class="route-result hidden"></div>
+    </section>
+
+    <aside class="panel side-panel">
+      <h2>Step hints</h2>
+      <ul id="hints-legend" class="hints-legend"></ul>
+
+      <h2>Ollama inventory</h2>
+      <p id="inventory-note" class="status muted"></p>
+      <p id="models-dir-label" class="section-label">Scanning</p>
+      <p class="section-label">Disk manifests</p>
+      <ul id="disk-models-list" class="models-list"></ul>
+      <p class="section-label">Ollama API (/api/tags)</p>
+      <p id="models-status" class="status muted">Loading…</p>
+      <ul id="models-list" class="models-list"></ul>
+    </aside>
+  </main>
+
+  <script src="/app.js?v=5"></script>
+</body>
+</html>

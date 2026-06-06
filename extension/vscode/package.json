@@ -1,0 +1,51 @@
+{
+  "name": "split-stack-vscode",
+  "displayName": "Split Stack",
+  "description": "Transparent local quick-ask via split-stack routing and Ollama (VS Code and Cursor)",
+  "version": "0.1.0",
+  "publisher": "eddiebaumel",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:splitstack.quickAsk"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "splitstack.quickAsk",
+        "title": "Split Stack: Quick Ask"
+      }
+    ],
+    "configuration": {
+      "title": "Split Stack",
+      "properties": {
+        "splitstack.pythonPath": {
+          "type": "string",
+          "default": "python",
+          "description": "Python executable with split-stack installed"
+        },
+        "splitstack.ollamaBaseUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:11434",
+          "description": "Ollama base URL for model discovery and generation"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "tsc -p ./ --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.3"
+  }
+}

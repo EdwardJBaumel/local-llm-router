@@ -1,0 +1,13 @@
+{
+  "deployment_profile": "workstation_12gb",
+  "comment": "Edit deployment_profile to match your GPU: workstation_8gb through workstation_32gb, or datacenter.",
+  "models": [
+    { "match": "qwen3:4b", "weight": 4000, "vram_gb": 4, "family": "qwen" },
+    { "match": "qwen3:8b", "weight": 8000, "vram_gb": 6, "family": "qwen" },
+    { "match": "qwen3:14b", "weight": 14000, "vram_gb": 10, "family": "qwen" },
+    { "match": "qwen3:30b", "weight": 30000, "vram_gb": 20, "family": "qwen" },
+    { "match": "qwen3:30b-a3b", "weight": 30000, "vram_gb": 20, "family": "qwen" },
+    { "match": "gemma4:e4b", "weight": 4000, "vram_gb": 4, "family": "gemma" },
+    { "match": "gemma3:12b", "weight": 12000, "vram_gb": 10, "family": "gemma" }
+  ]
+}

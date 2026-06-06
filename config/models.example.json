@@ -1,0 +1,23 @@
+{
+  "deployment_profile": "workstation_12gb",
+  "assumed_vram_gb": 12,
+  "comment": "Workstation presets: workstation_8gb through workstation_32gb. More families: docs/LOCAL_MODELS.md",
+  "models": [
+    { "match": "gemma4:e4b", "weight": 4000, "vram_gb": 4, "family": "gemma" },
+    { "match": "gemma3:4b", "weight": 4000, "vram_gb": 4, "family": "gemma" },
+    { "match": "gemma3:12b", "weight": 12000, "vram_gb": 10, "family": "gemma" },
+    { "match": "qwen3:4b", "weight": 4000, "vram_gb": 4, "family": "qwen" },
+    { "match": "qwen3:8b", "weight": 8000, "vram_gb": 6, "family": "qwen" },
+    { "match": "qwen3:14b", "weight": 14000, "vram_gb": 10, "family": "qwen" },
+    { "match": "qwen3:30b", "weight": 30000, "vram_gb": 20, "family": "qwen" },
+    { "match": "qwen3:30b-a3b", "weight": 30000, "vram_gb": 20, "family": "qwen" },
+    { "match": "phi3:mini", "weight": 3800, "vram_gb": 4, "family": "phi" },
+    { "match": "deepseek-r1", "weight": 14000, "vram_gb": 10, "family": "deepseek" },
+    { "match": "llama3.2:3b", "weight": 3000, "vram_gb": 3, "family": "llama" },
+    { "match": "llama3.1:8b", "weight": 8000, "vram_gb": 6, "family": "llama" },
+    { "match": "llama3.1:70b", "weight": 70000, "vram_gb": 48, "family": "llama" },
+    { "match": "mistral:7b", "weight": 7000, "vram_gb": 5, "family": "mistral" },
+    { "match": ":e4b", "weight": 4000, "vram_gb": 4, "family": "gemma" },
+    { "match": ":e2b", "weight": 2000, "vram_gb": 3, "family": "gemma" }
+  ]
+}
