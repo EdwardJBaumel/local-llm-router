@@ -171,6 +171,7 @@ def check_stack_health(
             base_url=base_url,
         )
     )
+    findings.extend(_tier_slot_findings(resolved_profile, missing))
 
     ready = len(resolved) >= 2
     return StackHealthReport(
@@ -208,6 +209,51 @@ def format_stack_health(report: StackHealthReport) -> str:
     else:
         lines.append("Routing: not ready — install more models or adjust profile/VRAM.")
     return "\n".join(lines)
+
+
+def _tier_slot_findings(
+    profile: str,
+    missing: tuple[str, ...],
+) -> list[StackHealthFinding]:
+    from local_llm_router.model_registry import normalize_deployment_profile
+    from local_llm_router.presets import RECOMMENDED_STACKS
+
+    profile_name = normalize_deployment_profile(profile)
+    stack = RECOMMENDED_STACKS.get(profile_name)
+    if stack is None or not stack.tier_slots:
+        return []
+
+    slots = stack.tier_slots
+    findings: list[StackHealthFinding] = []
+    primary = slots.get("complex")
+    alt = slots.get("complex_alt")
+
+    if primary and primary in missing:
+        findings.append(
+            StackHealthFinding(
+                level="error",
+                code="complex_primary_missing",
+                message=(
+                    f"{primary} is the agent-mode complex model but is not installed. "
+                    "mode=agent and default routing cannot use the heavy tier."
+                ),
+                models=(primary,),
+            )
+        )
+    if alt and alt in missing:
+        fallback = primary or "complex"
+        findings.append(
+            StackHealthFinding(
+                level="warn",
+                code="complex_alt_missing",
+                message=(
+                    f"{alt} is the chat-mode complex model (complex_alt) but is not installed. "
+                    f"mode=chat will fall back to {fallback} — slower and heavier."
+                ),
+                models=(alt,),
+            )
+        )
+    return findings
 
 
 def _vram_for_profile(profile: str) -> int | None:

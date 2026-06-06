@@ -77,6 +77,56 @@ def test_check_stack_health_duplicate_tags_warn():
     assert report.profile == "workstation_16gb"
 
 
+def test_check_stack_health_warns_missing_complex_alt():
+    inventory = ModelInventory(
+        api_models=(
+            "gemma4:e4b",
+            "qwen3.5:9b",
+            "qwen3.6:35b-a3b",
+            "qwen2.5-coder:14b",
+            "deepseek-r1:8b",
+        ),
+        disk_models=(
+            "gemma4:e4b",
+            "qwen3.5:9b",
+            "qwen3.6:35b-a3b",
+            "qwen2.5-coder:14b",
+            "deepseek-r1:8b",
+        ),
+        manifest_roots=("/models",),
+        suggested_stack=(),
+        note=None,
+    )
+    with patch("local_llm_router.stack_health.list_model_inventory", return_value=inventory):
+        with patch(
+            "local_llm_router.stack_health.audit_model_folders",
+            return_value={"duplicate_tags": []},
+        ):
+            report = check_stack_health(profile="workstation_16gb", quant="default")
+    codes = {item.code for item in report.findings}
+    assert "complex_alt_missing" in codes
+    assert "qwen3:14b" in report.missing
+
+
+def test_check_stack_health_errors_missing_complex_primary():
+    inventory = ModelInventory(
+        api_models=("gemma4:e4b", "qwen3.5:9b", "qwen3:14b", "deepseek-r1:8b"),
+        disk_models=("gemma4:e4b", "qwen3.5:9b", "qwen3:14b", "deepseek-r1:8b"),
+        manifest_roots=("/models",),
+        suggested_stack=(),
+        note=None,
+    )
+    with patch("local_llm_router.stack_health.list_model_inventory", return_value=inventory):
+        with patch(
+            "local_llm_router.stack_health.audit_model_folders",
+            return_value={"duplicate_tags": []},
+        ):
+            report = check_stack_health(profile="workstation_16gb", quant="default")
+    codes = {item.code for item in report.findings}
+    assert "complex_primary_missing" in codes
+    assert "qwen3.6:35b-a3b" in report.missing
+
+
 def test_format_stack_health_includes_routing_line():
     inventory = ModelInventory(
         api_models=("qwen3:8b",),
