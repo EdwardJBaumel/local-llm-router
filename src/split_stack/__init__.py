@@ -46,11 +46,12 @@ from split_stack.session import (
     route,
     session_warnings,
 )
+from split_stack.stack_health import check_stack_health, format_stack_health
 from split_stack.startup_tips import emit_import_tips, model_recommendation_report
 from split_stack.tiering import assign_tiers, describe_tiers
 from split_stack.validation import validate_tier_map
 
-__version__ = "0.2.0"
+__version__ = "0.3.1"
 
 __all__ = [
     "ComplexityTier",
@@ -98,6 +99,8 @@ __all__ = [
     "score_prompt",
     "session_warnings",
     "stack_recommendation",
+    "check_stack_health",
+    "format_stack_health",
     "usage_requirements",
     "validate_tier_map",
     "__version__",

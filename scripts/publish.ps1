@@ -34,13 +34,23 @@ function Require-Token {
         Write-Error @"
 TWINE_PASSWORD is not set.
 
-Create an API token at test.pypi.org or pypi.org, then in this PowerShell session:
+Easiest fix — run the interactive uploader (no quoting headaches):
 
-  `$env:TWINE_USERNAME = '__token__'
-  `$env:TWINE_PASSWORD = 'pypi-Ag...'
+  .\scripts\upload-pypi.ps1 -TestPyPI
+  .\scripts\upload-pypi.ps1
 
-Re-run this script.
+Or set env vars — QUOTES ARE REQUIRED in PowerShell:
+
+  `$env:TWINE_USERNAME = "__token__"
+  `$env:TWINE_PASSWORD = "pypi-paste-full-token-here"
+
+Wrong (will fail):
+  `$env:TWINE_USERNAME = __token__
+  `$env:TWINE_PASSWORD = pypi-...
 "@
+    }
+    if (-not $env:TWINE_USERNAME) {
+        $env:TWINE_USERNAME = "__token__"
     }
 }
 

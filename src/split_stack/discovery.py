@@ -240,7 +240,7 @@ def audit_model_folders(
         primary = home if home.is_dir() else None
     return {
         "primary_root": str(primary) if primary else None,
-        "scan_roots": list(manifest_search_paths()),
+        "scan_roots": [str(path) for path in manifest_search_paths()],
         "tag_count": len(locations),
         "locations": {tag: list(paths) for tag, paths in locations.items()},
         "duplicates": duplicates,

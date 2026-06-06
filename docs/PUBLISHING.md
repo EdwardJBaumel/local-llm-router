@@ -17,6 +17,33 @@ Repo: [github.com/edwardjbaumel/split-stack](https://github.com/edwardjbaumel/sp
 
 ---
 
+## Easiest upload (Windows PowerShell)
+
+No env-var quoting — script prompts for token:
+
+```powershell
+cd C:\Users\zonka\dev\projects\split-stack
+.\scripts\upload-pypi.ps1 -TestPyPI    # token from test.pypi.org
+.\scripts\upload-pypi.ps1              # token from pypi.org
+```
+
+## Manual env vars (quotes required)
+
+PowerShell **must** use double quotes around values:
+
+```powershell
+$env:TWINE_USERNAME = "__token__"
+$env:TWINE_PASSWORD = "pypi-paste-full-token-here"
+```
+
+**Wrong** — these fail silently or run `pypi-...` as a command:
+
+```powershell
+$env:TWINE_USERNAME = __token__
+$env:TWINE_PASSWORD = pypi-Ag...
+username = __token__    # this is .pypirc file syntax, NOT PowerShell
+```
+
 ## One-time PyPI setup
 
 1. Create accounts:

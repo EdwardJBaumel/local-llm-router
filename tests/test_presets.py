@@ -21,7 +21,7 @@ def test_assign_recommended_tiers_16gb():
     assert tiers.simple == "gemma4:e4b"
     assert tiers.medium == "qwen3:8b"
     assert tiers.complex == "qwen3:14b"
-    assert tiers.reasoning == "qwen3:14b"
+    assert tiers.reasoning == "deepseek-r1:8b"
     assert tiers.code is None
 
 

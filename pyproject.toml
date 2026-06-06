@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "split-stack"
-version = "0.2.0"
+version = "0.3.1"
 description = "Python routing library for local LLM agent loops: score prompts, map tiers to model names, embed in your runner."
 readme = "README.md"
 requires-python = ">=3.10"

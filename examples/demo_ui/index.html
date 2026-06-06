@@ -7,75 +7,83 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <header>
+  <header class="site-header">
     <h1>split-stack</h1>
     <p class="tagline">Pick the right local model for each agent step</p>
-    <p class="note">Browser demo for the Python library — not a chat app.</p>
+    <p class="note">Demo for the Python library — not a chat app. Install: <code>pip install split-stack</code></p>
   </header>
 
-  <main>
-    <section class="panel guide-panel" id="guide-section">
-      <div class="panel-head">
-        <div>
-          <h2>What model for what task</h2>
-          <p class="intro">Your agent loop tags each step (<code>lookup</code>, <code>explain</code>, …). Split-stack maps that to a tier, then picks a model from your stack.</p>
+  <main class="layout">
+    <section class="panel stack-bar" id="stack-bar">
+      <div class="stack-controls">
+        <label>
+          <span>GPU VRAM</span>
+          <select id="vram-select"></select>
+        </label>
+        <label>
+          <span>Gemma quant</span>
+          <select id="quant-select"></select>
+        </label>
+        <label>
+          <span>Inventory</span>
+          <select id="source-select">
+            <option value="both">API + disk</option>
+            <option value="disk">Disk only</option>
+            <option value="api">API only</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="stack-chips-row">
+        <span class="stack-label">Recommended stack</span>
+        <div id="stack-chips" class="stack-chips">
+          <span class="placeholder muted">Loading…</span>
         </div>
       </div>
 
-      <div class="stack-controls controls">
+      <label class="custom-stack-toggle">
+        <input id="custom-stack-toggle" type="checkbox">
+        Custom stack (comma-separated)
+      </label>
+      <label class="stack-field custom-stack-field hidden" id="custom-stack-field">
+        <span>Your models</span>
+        <input id="models-input" type="text" value="" spellcheck="false" placeholder="gemma4:e4b,qwen3:8b,qwen3:14b">
+      </label>
+
+      <p id="stack-note" class="bar-note muted"></p>
+    </section>
+
+    <section class="panel" id="route-section">
+      <h2>Try one prompt</h2>
+      <p class="intro">Same call as <code>split_stack.route(prompt, hint=...)</code> in Python.</p>
+      <textarea id="prompt-input" rows="2" spellcheck="false">what is caching?</textarea>
+      <div class="route-row">
         <label>
-          Model source
-          <select id="source-select">
-            <option value="both">API + disk manifests</option>
-            <option value="disk">Disk manifests only</option>
-            <option value="api">Ollama API only</option>
+          <span>Step hint</span>
+          <select id="hint-select">
+            <option value="">auto (guess from text)</option>
           </select>
         </label>
-        <label>
-          Stack preset
-          <select id="preset-select"></select>
-        </label>
-        <label class="models-field">
-          Your stack (comma-separated)
-          <input id="models-input" type="text" value="gemma4:e4b,qwen3:8b,qwen3:14b" size="42">
-        </label>
+        <button id="run-route" type="button">Route</button>
       </div>
-      <p id="preset-note" class="status muted"></p>
-      <p id="guide-note" class="status muted">Loading guide…</p>
-
-      <h3 class="guide-heading">Tier ladder</h3>
-      <div id="tier-strip" class="tier-strip">
-        <p class="placeholder">Loading…</p>
-      </div>
-
-      <h3 class="guide-heading">Agent step types</h3>
-      <div id="hint-matrix" class="hint-matrix">
-        <p class="placeholder">Loading…</p>
-      </div>
-
-      <h3 class="guide-heading">Your models <span id="community-tier-label" class="muted-inline"></span></h3>
-      <p id="community-source" class="status muted"></p>
-      <p id="inventory-audit" class="status muted"></p>
-      <div id="model-cards" class="model-cards">
-        <p class="placeholder">Loading…</p>
-      </div>
+      <div id="route-result" class="route-result hidden"></div>
     </section>
 
     <section class="panel" id="compare-section">
       <div class="panel-head">
         <div>
           <h2>Savings demo</h2>
-          <p class="intro">Walks through a fake 5-step agent loop. <strong>Routed</strong> = split-stack picks a model per step. <strong>Baseline</strong> = always your largest model. Dry run needs no Ollama — it only shows routing.</p>
+          <p class="intro">Five fake agent steps. <strong>Routed</strong> = split-stack picks a model per step. <strong>Baseline</strong> = always your largest model.</p>
         </div>
-        <div class="controls">
+        <div class="panel-actions">
           <label class="toggle">
             <input id="live-toggle" type="checkbox">
-            Live Ollama (slow)
+            Live Ollama
           </label>
-          <button id="run-compare" type="button">Run savings demo</button>
+          <button id="run-compare" type="button">Run demo</button>
         </div>
       </div>
-      <p id="compare-status" class="status">Dry run — instant routing, no inference.</p>
+      <p id="compare-status" class="status">Dry run — routing only, no inference.</p>
       <div id="summary-strip" class="summary-strip hidden"></div>
       <div id="step-grid" class="step-grid"></div>
       <div id="latency-section" class="latency-section hidden">
@@ -85,39 +93,36 @@
       </div>
     </section>
 
-    <section class="panel" id="route-section">
-      <h2>Try one prompt</h2>
-      <p class="intro">Type any prompt and see which model would run.</p>
-      <div class="route-form">
-        <textarea id="prompt-input" rows="3">what is caching?</textarea>
-        <div class="route-controls">
-          <label>
-            Step hint
-            <select id="hint-select">
-              <option value="">auto (text heuristics)</option>
-            </select>
-          </label>
-          <button id="run-route" type="button">Route</button>
-        </div>
+    <section class="panel guide-panel" id="guide-section">
+      <h2>What model for what task</h2>
+      <p class="intro">Tag each agent step with a hint. Split-stack maps hint → tier → model from your stack.</p>
+      <p id="guide-note" class="status muted">Loading…</p>
+
+      <h3 class="subhead">Tier ladder (your stack)</h3>
+      <div id="tier-strip" class="tier-strip">
+        <p class="placeholder">Loading…</p>
       </div>
-      <div id="route-result" class="route-result hidden"></div>
+
+      <h3 class="subhead">Hint → model</h3>
+      <div id="hint-table-wrap" class="table-wrap">
+        <p class="placeholder">Loading…</p>
+      </div>
+
+      <details class="details-block" id="models-details">
+        <summary>Installed models on this machine</summary>
+        <p id="inventory-audit" class="status muted"></p>
+        <div id="model-cards" class="model-cards"></div>
+        <p id="models-dir-label" class="section-label"></p>
+        <p class="section-label">Disk manifests</p>
+        <ul id="disk-models-list" class="models-list"></ul>
+        <p class="section-label">Ollama API</p>
+        <p id="models-status" class="status muted"></p>
+        <ul id="models-list" class="models-list"></ul>
+        <p id="inventory-note" class="status muted"></p>
+      </details>
     </section>
-
-    <aside class="panel side-panel">
-      <h2>Step hints</h2>
-      <ul id="hints-legend" class="hints-legend"></ul>
-
-      <h2>Ollama inventory</h2>
-      <p id="inventory-note" class="status muted"></p>
-      <p id="models-dir-label" class="section-label">Scanning</p>
-      <p class="section-label">Disk manifests</p>
-      <ul id="disk-models-list" class="models-list"></ul>
-      <p class="section-label">Ollama API (/api/tags)</p>
-      <p id="models-status" class="status muted">Loading…</p>
-      <ul id="models-list" class="models-list"></ul>
-    </aside>
   </main>
 
-  <script src="/app.js?v=5"></script>
+  <script src="/app.js?v=7"></script>
 </body>
 </html>

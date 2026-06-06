@@ -27,8 +27,8 @@ RECOMMENDED_STACKS: dict[str, RecommendedStack] = {
     ),
     "workstation_16gb": RecommendedStack(
         profile="workstation_16gb",
-        models=("gemma4:e4b", "qwen3:8b", "qwen3:14b"),
-        description="Gemma lookup + Qwen mid/complex; add coder/reason tags via models=",
+        models=("gemma4:e4b", "qwen3:8b", "qwen3:14b", "deepseek-r1:8b"),
+        description="12 GB stack + room for QAT Gemma 26B; add coder tags via models=",
     ),
     "workstation_24gb": RecommendedStack(
         profile="workstation_24gb",

@@ -28,3 +28,26 @@ def test_stack_setup_json(mock_run_setup, capsys):
     assert payload["ready"] is True
     assert payload["profile"] == "workstation_12gb"
     assert "qwen3:14b" in payload["pulled"]
+
+
+def test_stack_doctor_check_stack_json(capsys):
+    from split_stack.discovery import ModelInventory
+
+    inventory = ModelInventory(
+        api_models=("gemma4:e4b", "qwen3:8b", "qwen3:14b", "deepseek-r1:8b", "gemma4:26b-a4b"),
+        disk_models=(),
+        manifest_roots=(),
+        suggested_stack=("gemma4:e4b", "qwen3:8b", "qwen3:14b"),
+        note=None,
+    )
+    with patch("split_stack.stack_health.list_model_inventory", return_value=inventory):
+        with patch(
+            "split_stack.stack_health.audit_model_folders",
+            return_value={"duplicate_tags": []},
+        ):
+            exit_code = main(["doctor", "--check-stack", "--vram-gb", "16", "--quant", "qat", "--json"])
+    payload = json.loads(capsys.readouterr().out.strip())
+    assert exit_code == 0
+    assert payload["ready"] is True
+    assert payload["profile"] == "workstation_16gb"
+    assert payload["quant"] == "qat"

@@ -20,6 +20,7 @@ from split_stack.ollama_generate import ask_prompt_json, route_prompt_json
 from split_stack.requirements import UsageProfile, list_usage_profiles, usage_requirements
 from split_stack.presets import assign_recommended_tiers, list_recommended_stacks, recommended_models
 from split_stack.setup_wizard import format_setup_summary, plan_setup, run_setup
+from split_stack.stack_health import check_stack_health, format_stack_health
 from split_stack.tiering import assign_tiers, describe_tiers
 
 
@@ -159,7 +160,47 @@ def _cmd_profiles(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_doctor_check_stack(args: argparse.Namespace) -> int:
+    models = None
+    if args.models:
+        models = [part.strip() for part in args.models.split(",") if part.strip()]
+    report = check_stack_health(
+        profile=args.profile,
+        vram_gb=args.vram_gb,
+        quant=args.quant,
+        base_url=args.base_url,
+        models=models,
+    )
+    if args.json:
+        payload = {
+            "ready": report.ready,
+            "profile": report.profile,
+            "vram_gb": report.vram_gb,
+            "quant": report.quant,
+            "recommended": list(report.recommended),
+            "resolved": list(report.resolved),
+            "missing": list(report.missing),
+            "pool_size": report.pool_size,
+            "inventory_note": report.inventory_note,
+            "findings": [
+                {
+                    "level": item.level,
+                    "code": item.code,
+                    "message": item.message,
+                    "models": list(item.models),
+                }
+                for item in report.findings
+            ],
+        }
+        return _emit_json(payload)
+    print(format_stack_health(report))
+    return 0 if report.ready else 1
+
+
 def _cmd_doctor(args: argparse.Namespace) -> int:
+    if args.check_stack:
+        return _cmd_doctor_check_stack(args)
+
     advice = stack_recommendation(cursor_override_enabled=False)
     print(f"Cursor model: {advice.cursor_model}")
     print(f"Prose path: {advice.prose_path}")
@@ -505,6 +546,27 @@ def main(argv: list[str] | None = None) -> int:
         help="Path to split-stack.models.json (or set SPLIT_STACK_MODELS_CONFIG)",
     )
     _add_quant_arg(doctor_parser)
+    doctor_parser.add_argument(
+        "--check-stack",
+        action="store_true",
+        help="Offline stack health: missing models, duplicates, routing spread (exit 1 if not ready)",
+    )
+    doctor_parser.add_argument(
+        "--vram-gb",
+        type=int,
+        choices=[8, 12, 16, 24, 32],
+        help="GPU VRAM for recommended stack (alternative to --profile)",
+    )
+    doctor_parser.add_argument(
+        "--base-url",
+        default="http://127.0.0.1:11434",
+        help="Ollama base URL for inventory scan",
+    )
+    doctor_parser.add_argument(
+        "--models",
+        help="Comma-separated stack override when using --check-stack",
+    )
+    doctor_parser.add_argument("--json", action="store_true", help="JSON output (with --check-stack)")
     doctor_parser.set_defaults(handler=_cmd_doctor)
 
     requirements_parser = subparsers.add_parser(

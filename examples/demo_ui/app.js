@@ -1,7 +1,11 @@
+const vramSelect = document.getElementById("vram-select");
+const quantSelect = document.getElementById("quant-select");
 const sourceSelect = document.getElementById("source-select");
-const presetSelect = document.getElementById("preset-select");
+const stackChips = document.getElementById("stack-chips");
+const stackNote = document.getElementById("stack-note");
+const customStackToggle = document.getElementById("custom-stack-toggle");
+const customStackField = document.getElementById("custom-stack-field");
 const modelsInput = document.getElementById("models-input");
-const presetNote = document.getElementById("preset-note");
 const liveToggle = document.getElementById("live-toggle");
 const runCompareBtn = document.getElementById("run-compare");
 const compareStatus = document.getElementById("compare-status");
@@ -13,7 +17,6 @@ const latencyTotals = document.getElementById("latency-totals");
 
 const promptInput = document.getElementById("prompt-input");
 const hintSelect = document.getElementById("hint-select");
-const hintsLegend = document.getElementById("hints-legend");
 const runRouteBtn = document.getElementById("run-route");
 const routeResult = document.getElementById("route-result");
 
@@ -24,11 +27,9 @@ const modelsStatus = document.getElementById("models-status");
 const modelsList = document.getElementById("models-list");
 
 const tierStrip = document.getElementById("tier-strip");
-const hintMatrix = document.getElementById("hint-matrix");
+const hintTableWrap = document.getElementById("hint-table-wrap");
 const guideNote = document.getElementById("guide-note");
 const modelCards = document.getElementById("model-cards");
-const communityTierLabel = document.getElementById("community-tier-label");
-const communitySource = document.getElementById("community-source");
 const inventoryAudit = document.getElementById("inventory-audit");
 
 const HINT_EXAMPLES = {
@@ -39,8 +40,17 @@ const HINT_EXAMPLES = {
   reason: "prove this token expiry policy step by step",
 };
 
-let presets = [];
 let hintsCatalog = [];
+let stackState = {
+  vram_gb: 16,
+  quant: "qat",
+  models: [],
+  resolved_models: [],
+  missing_models: [],
+  description: "",
+  notes: [],
+  warning: null,
+};
 
 function tierBadge(tier) {
   return `<span class="badge ${tier}">${tier}</span>`;
@@ -51,11 +61,62 @@ function setStatus(el, text, isError = false) {
   el.classList.toggle("error", isError);
 }
 
-function parseStack(raw) {
-  return raw
-    .split(",")
-    .map((part) => part.trim())
-    .filter(Boolean);
+function activeModels() {
+  if (customStackToggle.checked) {
+    return modelsInput.value
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean);
+  }
+  return stackState.resolved_models.length >= 2
+    ? stackState.resolved_models
+    : stackState.models;
+}
+
+function stackQueryParams() {
+  const params = new URLSearchParams({
+    vram_gb: String(vramSelect.value),
+    quant: quantSelect.value,
+    source: sourceSelect.value,
+  });
+  if (customStackToggle.checked && modelsInput.value.trim()) {
+    params.set("models", modelsInput.value.trim());
+  }
+  return params;
+}
+
+function renderStackChips(data) {
+  const recommended = data.models || [];
+  const resolved = data.resolved_models || recommended;
+  const missing = new Set(data.missing_models || []);
+  const show = resolved.length >= 2 ? resolved : recommended;
+
+  stackChips.innerHTML = show.length
+    ? show
+        .map(
+          (name) =>
+            `<span class="stack-chip${missing.has(name) ? " missing" : ""}" title="${
+              missing.has(name) ? "Not found in inventory" : "In your inventory"
+            }">${name}</span>`
+        )
+        .join("")
+    : `<span class="placeholder muted">Pick VRAM and quant above.</span>`;
+
+  const parts = [];
+  if (data.description) {
+    parts.push(data.description);
+  }
+  if (data.notes && data.notes.length) {
+    parts.push(data.notes.join(" "));
+  }
+  if (data.warning) {
+    parts.push(data.warning);
+  }
+  if (data.inventory_note) {
+    parts.push(data.inventory_note);
+  }
+  stackNote.textContent = parts.join(" — ");
+  stackNote.classList.toggle("error", Boolean(data.warning && data.warning.includes("unreachable")));
 }
 
 function renderCompare(data) {
@@ -116,34 +177,19 @@ function renderCompare(data) {
 }
 
 function renderGuide(data) {
-  const community = data.community || {};
-  communityTierLabel.textContent = data.vram_tier
-    ? `(M tier · ${community.vram_tier_label || data.vram_tier})`
-    : "";
-  communitySource.textContent = community.source
-    ? `${community.source} — installed models merged with community notes below.`
-    : "";
-
   const audit = data.audit || {};
   if (audit.duplicate_tags && audit.duplicate_tags.length) {
     setStatus(
       inventoryAudit,
-      `Duplicate copies: ${audit.duplicate_tags.join(", ")} — keep one Ollama folder (${audit.primary_root || "pick one"}).`,
+      `Duplicate copies: ${audit.duplicate_tags.join(", ")} — keep one Ollama folder.`,
       true
     );
-  } else if (audit.primary_root) {
-    setStatus(inventoryAudit, `Single library at ${audit.primary_root} — no duplicate tags found.`);
+  } else if (data.missing_recommended && data.missing_recommended.length) {
+    setStatus(inventoryAudit, `Not installed: ${data.missing_recommended.join(", ")}.`);
   } else {
-    inventoryAudit.textContent = "";
-  }
-
-  if (data.missing_recommended && data.missing_recommended.length) {
-    inventoryAudit.textContent = [
-      inventoryAudit.textContent,
-      `Not installed yet: ${data.missing_recommended.join(", ")}.`,
-    ]
-      .filter(Boolean)
-      .join(" ");
+    inventoryAudit.textContent = audit.primary_root
+      ? `Models folder: ${audit.primary_root}`
+      : "";
   }
 
   const tierOrder = ["simple", "medium", "complex", "reasoning", "code"];
@@ -160,94 +206,119 @@ function renderGuide(data) {
     `
         )
         .join("")
-    : `<p class="placeholder">Set a stack above (at least 2 models, comma-separated).</p>`;
+    : `<p class="placeholder">Need at least two models in your stack.</p>`;
 
   const routes = data.hint_routes || [];
-  hintMatrix.innerHTML = routes.length
-    ? routes
+  hintTableWrap.innerHTML = routes.length
+    ? `
+    <table class="hint-table">
+      <thead>
+        <tr>
+          <th>Hint</th>
+          <th>Good for</th>
+          <th>Tier</th>
+          <th>Model</th>
+          <th>Example prompt</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${routes
+          .map(
+            (item) => `
+          <tr>
+            <td><code class="hint-id">${item.hint_id}</code></td>
+            <td>${item.label}<br><span class="muted" style="font-size:0.78rem">${item.summary}</span></td>
+            <td>${tierBadge(item.tier)}</td>
+            <td class="model-cell">${item.model}</td>
+            <td class="example-cell">${item.example_prompt}</td>
+          </tr>
+        `
+          )
+          .join("")}
+      </tbody>
+    </table>
+  `
+    : `<p class="placeholder">Could not load hint routes — check your stack has 2+ models.</p>`;
+
+  const models = (data.models || []).filter((item) => item.installed || item.in_stack);
+  modelCards.innerHTML = models.length
+    ? models
+        .slice(0, 24)
         .map(
           (item) => `
-      <article class="hint-card">
-        <header>
-          ${tierBadge(item.tier)}
-          <h3>${item.label}</h3>
-          <span class="hint-id">${item.hint_id}</span>
-        </header>
-        <p class="summary">${item.summary}</p>
-        <p class="routes-to">Routes to <strong>${item.model}</strong></p>
-        <p class="example">"${item.example_prompt}"</p>
+      <article class="model-card${item.in_stack ? " in-stack" : ""}">
+        <h4>${item.name}</h4>
+        <p class="meta">${item.family || "model"}${item.in_stack ? " · in active stack" : ""}</p>
+        <p class="best-for">${item.best_for || ""}</p>
       </article>
     `
         )
         .join("")
-    : `<p class="placeholder">Could not load hint routes.</p>`;
-
-  const models = data.models || [];
-  modelCards.innerHTML = models.length
-    ? models
-        .map((item) => {
-          let stackClass = "dim";
-          if (item.status === "recommended") stackClass = "missing";
-          else if (item.in_stack) stackClass = "in-stack";
-          else if (item.status === "duplicate") stackClass = "duplicate";
-
-          let badge = "";
-          if (item.in_stack) badge = `<span class="stack-badge">in stack</span>`;
-          else if (item.status === "recommended") badge = `<span class="stack-badge missing-badge">pull me</span>`;
-          else if (item.status === "duplicate") badge = `<span class="stack-badge dup-badge">duplicate</span>`;
-
-          const routeHints =
-            item.hints && item.hints.length
-              ? item.hints.map((h) => `<span class="slot-tag active">${h}</span>`).join("")
-              : "";
-          const commHints =
-            item.community_hints && item.community_hints.length
-              ? item.community_hints.map((h) => `<span class="slot-tag community">${h}</span>`).join("")
-              : "";
-          const slots = (item.tier_slots || [])
-            .map((s) => `<span class="slot-tag${item.in_stack ? " active" : ""}">${s}</span>`)
-            .join("");
-          const vram = item.vram_gb != null ? `${item.vram_gb} GB` : "? GB";
-          const family = item.family || "unknown";
-          const dupNote =
-            item.duplicate_locations && item.duplicate_locations.length > 1
-              ? `<span class="community-note">Copied in ${item.duplicate_locations.length} folders — delete extras</span>`
-              : "";
-          const pullHint =
-            item.status === "recommended"
-              ? `<span class="community-note">ollama pull ${item.name}</span>`
-              : "";
-          return `
-      <article class="model-card ${stackClass}">
-        <h4>${item.name}${badge}</h4>
-        <p class="meta">${family}${item.installed ? ` · weight ${item.weight} · ~${vram}` : " · not installed"}${item.vram_ok === false ? " · over VRAM preset" : ""}</p>
-        <p class="best-for">${item.best_for}</p>
-        ${dupNote}
-        ${pullHint}
-        <div class="slot-tags">${routeHints}${commHints || slots || `<span class="slot-tag">—</span>`}</div>
-      </article>
-    `;
-        })
-        .join("")
-    : `<p class="placeholder">No models found. Start server with --models-dir pointing at your Ollama folder.</p>`;
+    : `<p class="placeholder muted">Expand this section after pointing the server at your Ollama folder.</p>`;
 
   const parts = [];
+  if (data.vram_gb) {
+    parts.push(`${data.vram_gb} GB · ${data.quant || "default"}`);
+  }
   if (data.note) {
     parts.push(data.note);
   } else {
-    parts.push(`${data.pool_size || models.length} model(s) scanned · stack has ${(data.stack || []).length}`);
+    parts.push(`Stack: ${(data.stack || []).join(", ")}`);
   }
   if (data.fallback) {
-    parts.push("Restart demo server for full inventory (old server detected).");
+    parts.push("Restart demo server for full inventory API.");
   }
-  setStatus(guideNote, parts.join(" "), Boolean(data.fallback || (data.note && data.note.includes("unreachable"))));
+  setStatus(guideNote, parts.join(" · "), Boolean(data.fallback));
+}
+
+async function loadStackOptions() {
+  const response = await fetch("/api/stack-options");
+  const data = await response.json();
+  vramSelect.innerHTML = (data.vram_options || [])
+    .map((item) => `<option value="${item.gb}">${item.label}</option>`)
+    .join("");
+  quantSelect.innerHTML = (data.quant_options || [])
+    .map((item) => `<option value="${item.id}">${item.label}</option>`)
+    .join("");
+  vramSelect.value = String(data.default_vram_gb || 16);
+  quantSelect.value = data.default_quant || "qat";
+}
+
+async function refreshStack() {
+  const params = stackQueryParams();
+  const response = await fetch(`/api/stack?${params.toString()}`);
+  const data = await response.json();
+  if (!data.ready) {
+    stackNote.textContent = data.error || "Could not load stack.";
+    return;
+  }
+  stackState = {
+    vram_gb: data.vram_gb,
+    quant: data.quant,
+    models: data.models || [],
+    resolved_models: data.resolved_models || [],
+    missing_models: data.missing_models || [],
+    description: data.description || "",
+    notes: data.notes || [],
+    warning: data.warning || null,
+  };
+  if (!customStackToggle.checked) {
+    modelsInput.value = (stackState.resolved_models.length >= 2
+      ? stackState.resolved_models
+      : stackState.models
+    ).join(",");
+  }
+  renderStackChips(data);
+  if (data.inventory_note && !inventoryNote.textContent) {
+    inventoryNote.textContent = data.inventory_note;
+    inventoryNote.classList.toggle("error", data.inventory_note.includes("unreachable"));
+  }
 }
 
 async function loadGuideFallback() {
-  const models = modelsInput.value.trim();
-  const stack = parseStack(models);
-  if (!stack.length) {
-    throw new Error("Enter at least one model in your stack.");
+  const models = activeModels();
+  if (models.length < 1) {
+    throw new Error("Need at least one model in your stack.");
   }
 
   const hints = hintsCatalog.length ? hintsCatalog : (await (await fetch("/api/hints")).json()).hints || [];
@@ -260,8 +331,11 @@ async function loadGuideFallback() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         prompt: HINT_EXAMPLES[hint.id] || hint.summary,
-        models,
+        models: models.join(","),
         hint: hint.id,
+        vram_gb: vramSelect.value,
+        quant: quantSelect.value,
+        source: sourceSelect.value,
       }),
     });
     const data = await response.json();
@@ -279,7 +353,7 @@ async function loadGuideFallback() {
     tiers[data.tier] = data.model;
   }
 
-  const cards = stack.map((name) => ({
+  const cards = models.map((name) => ({
     name,
     family: name.split(":")[0],
     weight: 0,
@@ -295,22 +369,23 @@ async function loadGuideFallback() {
 
   renderGuide({
     ready: true,
-    stack,
+    stack: models,
     tiers,
     hint_routes: hintRoutes,
     models: cards,
     pool_size: cards.length,
+    vram_gb: Number(vramSelect.value),
+    quant: quantSelect.value,
     fallback: true,
   });
 }
 
 async function loadGuide() {
   setStatus(guideNote, "Loading guide…");
-  const models = encodeURIComponent(modelsInput.value.trim());
-  const source = sourceSelect.value;
+  const params = stackQueryParams();
 
   try {
-    const response = await fetch(`/api/guide?models=${models}&source=${encodeURIComponent(source)}`);
+    const response = await fetch(`/api/guide?${params.toString()}`);
     if (response.status === 404) {
       await loadGuideFallback();
       return;
@@ -334,9 +409,8 @@ async function loadGuide() {
 }
 
 async function runCompare() {
-  const models = encodeURIComponent(modelsInput.value.trim());
-  const live = liveToggle.checked ? "1" : "0";
-  const preset = presetSelect.value;
+  const params = stackQueryParams();
+  params.set("live", liveToggle.checked ? "1" : "0");
   runCompareBtn.disabled = true;
   setStatus(
     compareStatus,
@@ -344,8 +418,7 @@ async function runCompare() {
   );
 
   try {
-    const url = `/api/compare?models=${models}&live=${live}&preset=${encodeURIComponent(preset)}`;
-    const response = await fetch(url);
+    const response = await fetch(`/api/compare?${params.toString()}`);
     const data = await response.json();
     if (!data.ready) {
       setStatus(compareStatus, data.error || "Demo failed", true);
@@ -379,9 +452,14 @@ async function runRoute() {
   try {
     const body = {
       prompt,
-      models: modelsInput.value.trim(),
       hint: hintSelect.value || null,
+      vram_gb: Number(vramSelect.value),
+      quant: quantSelect.value,
+      source: sourceSelect.value,
     };
+    if (customStackToggle.checked) {
+      body.models = modelsInput.value.trim();
+    }
     const response = await fetch("/api/route", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -407,43 +485,6 @@ async function runRoute() {
   }
 }
 
-function applyPreset(presetId) {
-  const preset = presets.find((item) => item.id === presetId);
-  if (!preset) {
-    return;
-  }
-  const models =
-    preset.resolved_models && preset.resolved_models.length >= 2
-      ? preset.resolved_models
-      : preset.models;
-  modelsInput.value = models.join(",");
-  const parts = [preset.description];
-  if (preset.warning) {
-    parts.push(preset.warning);
-  }
-  presetNote.textContent = parts.join(" — ");
-  loadGuide();
-}
-
-async function loadPresets() {
-  const source = sourceSelect.value;
-  const response = await fetch(`/api/presets?source=${encodeURIComponent(source)}`);
-  const data = await response.json();
-  presets = data.presets || [];
-  if (data.inventory_note) {
-    inventoryNote.textContent = data.inventory_note;
-    inventoryNote.classList.toggle("error", data.inventory_note.includes("unreachable"));
-  }
-  presetSelect.innerHTML = presets
-    .map((item) => `<option value="${item.id}">${item.label}</option>`)
-    .join("");
-  const preferred = presets.find((p) => p.id === "mixed_12gb") || presets[0];
-  if (preferred) {
-    presetSelect.value = preferred.id;
-    applyPreset(preferred.id);
-  }
-}
-
 async function loadHints() {
   const response = await fetch("/api/hints");
   const data = await response.json();
@@ -453,22 +494,9 @@ async function loadHints() {
   hintsCatalog.forEach((item) => {
     const option = document.createElement("option");
     option.value = item.id;
-    option.textContent = `${item.label} → ${item.tier}`;
+    option.textContent = `${item.id} — ${item.label}`;
     hintSelect.appendChild(option);
   });
-
-  hintsLegend.innerHTML = hintsCatalog
-    .map(
-      (item) => `
-      <li>
-        ${tierBadge(item.tier)}
-        <strong>${item.label}</strong>
-        <span class="hint-id">${item.id}</span>
-        <p>${item.summary}</p>
-      </li>
-    `
-    )
-    .join("");
 }
 
 async function loadModels() {
@@ -523,6 +551,15 @@ async function checkServerVersion() {
       );
       return false;
     }
+    const data = await response.json();
+    if (!data.version || data.version < 3) {
+      setStatus(
+        guideNote,
+        "Restart demo server for VRAM + quant stack bar (version 3+).",
+        true
+      );
+      return false;
+    }
     return true;
   } catch (_err) {
     setStatus(guideNote, "Cannot reach demo API.", true);
@@ -530,34 +567,45 @@ async function checkServerVersion() {
   }
 }
 
+async function reloadAll() {
+  await refreshStack();
+  await loadGuide();
+  await runCompare();
+}
+
 async function boot() {
   await loadHints();
   await loadModels();
   const serverOk = await checkServerVersion();
-  await loadPresets();
-  await loadGuide();
-  await runCompare();
+  await loadStackOptions();
+  await reloadAll();
   if (!serverOk) {
     inventoryNote.textContent =
       "Restart: stop the old server, then run examples/demo_ui/start.ps1 from split-stack.";
   }
 }
 
+function onStackControlsChange() {
+  reloadAll();
+}
+
+vramSelect.addEventListener("change", onStackControlsChange);
+quantSelect.addEventListener("change", onStackControlsChange);
 sourceSelect.addEventListener("change", () => {
-  loadModels().then(() => loadPresets().then(() => {
-    loadGuide();
-    runCompare();
-  }));
+  loadModels().then(reloadAll);
 });
-presetSelect.addEventListener("change", () => applyPreset(presetSelect.value));
-modelsInput.addEventListener("change", () => {
-  loadGuide();
-  runCompare();
+customStackToggle.addEventListener("change", () => {
+  customStackField.classList.toggle("hidden", !customStackToggle.checked);
+  if (!customStackToggle.checked) {
+    modelsInput.value = (stackState.resolved_models.length >= 2
+      ? stackState.resolved_models
+      : stackState.models
+    ).join(",");
+  }
+  reloadAll();
 });
-modelsInput.addEventListener("blur", () => {
-  loadGuide();
-  runCompare();
-});
+modelsInput.addEventListener("change", reloadAll);
+modelsInput.addEventListener("blur", reloadAll);
 runCompareBtn.addEventListener("click", runCompare);
 runRouteBtn.addEventListener("click", runRoute);
 liveToggle.addEventListener("change", () => {

@@ -16,18 +16,77 @@ if _PROJECT_SRC.is_dir() and str(_PROJECT_SRC) not in sys.path:
     sys.path.insert(0, str(_PROJECT_SRC))
 
 from split_stack.discovery import configure_models_dir, default_models_dir
-from split_stack.poc_models import DEFAULT_POC_STACK, list_stack_presets, models_for_preset, resolve_installed_stack
+from split_stack.poc_models import (
+    DEFAULT_POC_STACK,
+    list_quant_options,
+    list_vram_options,
+    stack_payload,
+)
+from split_stack.session import profile_for_vram_gb
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_PORT = 8765
 DEFAULT_MODELS = ",".join(DEFAULT_POC_STACK)
-DEMO_VERSION = 2
+DEMO_VERSION = 3
 
 
 def _parse_models(raw: str | None) -> list[str]:
     if not raw:
         return list(DEFAULT_POC_STACK)
     return [part.strip() for part in raw.split(",") if part.strip()]
+
+
+def _stack_options_payload() -> dict:
+    return {
+        "ready": True,
+        "vram_options": [{"gb": gb, "label": label} for gb, label in list_vram_options()],
+        "quant_options": [{"id": qid, "label": label} for qid, label in list_quant_options()],
+        "default_vram_gb": 16,
+        "default_quant": "qat",
+    }
+
+
+def _parse_vram(raw: str | None) -> int:
+    try:
+        value = int(raw or "16")
+    except ValueError:
+        return 16
+    if value in {8, 12, 16, 24, 32}:
+        return value
+    return 16
+
+
+def _parse_quant(raw: str | None) -> str:
+    return (raw or "qat").strip().lower() or "qat"
+
+
+def _models_from_query(
+    query: dict,
+    *,
+    base_url: str,
+    source: str = "both",
+) -> tuple[list[str], dict[str, object]]:
+    models_raw = query.get("models", [None])[0]
+    if models_raw:
+        models = _parse_models(models_raw)
+        payload = stack_payload(
+            vram_gb=_parse_vram(query.get("vram_gb", ["16"])[0]),
+            quant=_parse_quant(query.get("quant", ["qat"])[0]),
+            base_url=base_url,
+            source=source,
+            models_override=models,
+        )
+        return models, payload
+    vram_gb = _parse_vram(query.get("vram_gb", ["16"])[0])
+    quant = _parse_quant(query.get("quant", ["qat"])[0])
+    payload = stack_payload(
+        vram_gb=vram_gb,
+        quant=quant,
+        base_url=base_url,
+        source=source,
+    )
+    resolved = payload.get("resolved_models") or payload.get("models")
+    return list(resolved), payload
 
 
 def _json_response(handler: BaseHTTPRequestHandler, payload: dict, *, status: int = 200) -> None:
@@ -119,45 +178,12 @@ def _models_payload(*, base_url: str, models_dir: str | None = None) -> dict:
 
 
 def _presets_payload(*, base_url: str, source: str = "both") -> dict:
-    from split_stack.poc_models import available_model_pool
-
-    pool, inventory_note = available_model_pool(base_url=base_url, source=source)
-
-    presets = []
-    for item in list_stack_presets():
-        resolved, warning = resolve_installed_stack(
-            pool,
-            preset_id=item.id,
-            base_url=base_url,
-        )
-        models = list(item.models)
-        if item.id == "from_inventory":
-            models = list(models_for_preset("from_inventory", base_url=base_url))
-        presets.append(
-            {
-                "id": item.id,
-                "label": item.label,
-                "description": item.description,
-                "models": models,
-                "resolved_models": resolved,
-                "warning": warning,
-            }
-        )
+    """Legacy alias — returns stack options + default 16 GB QAT payload."""
+    payload = stack_payload(vram_gb=16, quant="qat", base_url=base_url, source=source)
     return {
         "ready": True,
-        "presets": presets,
-        "pool": pool,
-        "source": source,
-        "inventory_note": inventory_note,
-    }
-
-
-def _hints_payload() -> dict:
-    from split_stack.hints import LEGACY_HINT_ALIASES, list_hints
-
-    return {
-        "hints": list(list_hints()),
-        "legacy_aliases": LEGACY_HINT_ALIASES,
+        **_stack_options_payload(),
+        "stack": payload,
     }
 
 
@@ -167,6 +193,8 @@ def _guide_payload(
     base_url: str,
     source: str = "both",
     models_dir: str | None = None,
+    vram_gb: int = 16,
+    quant: str = "qat",
 ) -> dict:
     from split_stack.model_guide import build_model_guide
     from split_stack.poc_models import available_model_pool
@@ -176,9 +204,8 @@ def _guide_payload(
         from split_stack.discovery import discover_models_from_disk
 
         pool = discover_models_from_disk(manifests_root=models_dir)
-    guide = build_model_guide(stack, pool=pool or stack, profile="workstation_12gb")
-    from split_stack.community_picks import build_community_guide
-
+    profile = profile_for_vram_gb(vram_gb)
+    guide = build_model_guide(stack, pool=pool or stack, profile=profile)
     payload = {
         "ready": True,
         "stack": list(guide.stack),
@@ -190,11 +217,22 @@ def _guide_payload(
         "note": note,
         "models_dir": models_dir,
         "vram_tier": guide.vram_tier,
+        "vram_gb": vram_gb,
+        "profile": profile,
+        "quant": quant,
         "audit": guide.audit,
         "missing_recommended": list(guide.missing_recommended),
-        "community": build_community_guide(profile="workstation_12gb"),
     }
     return payload
+
+
+def _hints_payload() -> dict:
+    from split_stack.hints import LEGACY_HINT_ALIASES, list_hints
+
+    return {
+        "hints": list(list_hints()),
+        "legacy_aliases": LEGACY_HINT_ALIASES,
+    }
 
 
 class DemoHandler(BaseHTTPRequestHandler):
@@ -216,9 +254,31 @@ class DemoHandler(BaseHTTPRequestHandler):
                     "ready": True,
                     "version": DEMO_VERSION,
                     "models_dir": self.models_dir or (str(detected) if detected else None),
-                    "endpoints": ["guide", "compare", "route", "models", "presets", "hints", "community"],
+                    "endpoints": ["stack", "guide", "compare", "route", "models", "hints"],
                 },
             )
+            return
+
+        if parsed.path == "/api/stack":
+            base_url = query.get("base_url", [self.base_url])[0]
+            source = query.get("source", ["both"])[0]
+            vram_gb = _parse_vram(query.get("vram_gb", ["16"])[0])
+            quant = _parse_quant(query.get("quant", ["qat"])[0])
+            models_raw = query.get("models", [None])[0]
+            models_override = _parse_models(models_raw) if models_raw else None
+            payload = stack_payload(
+                vram_gb=vram_gb,
+                quant=quant,
+                base_url=base_url,
+                source=source,
+                models_override=models_override,
+            )
+            payload.update(_stack_options_payload())
+            _json_response(self, payload)
+            return
+
+        if parsed.path == "/api/stack-options":
+            _json_response(self, _stack_options_payload())
             return
 
         if parsed.path == "/api/community":
@@ -230,14 +290,8 @@ class DemoHandler(BaseHTTPRequestHandler):
 
         if parsed.path == "/api/compare":
             base_url = query.get("base_url", [self.base_url])[0]
-            preset = query.get("preset", [None])[0]
-            models_raw = query.get("models", [None])[0]
-            if models_raw:
-                models = _parse_models(models_raw)
-            elif preset:
-                models = models_for_preset(preset, base_url=base_url)
-            else:
-                models = _parse_models(None)
+            source = query.get("source", ["both"])[0]
+            models, _stack = _models_from_query(query, base_url=base_url, source=source)
             live = query.get("live", ["0"])[0] in ("1", "true", "yes")
             payload = _compare_payload(models=models, live=live, base_url=base_url)
             status = 200 if payload.get("ready", True) else 502
@@ -247,8 +301,10 @@ class DemoHandler(BaseHTTPRequestHandler):
         if parsed.path == "/api/guide":
             base_url = query.get("base_url", [self.base_url])[0]
             source = query.get("source", ["both"])[0]
-            models_raw = query.get("models", [None])[0]
-            stack = _parse_models(models_raw)
+            vram_gb = _parse_vram(query.get("vram_gb", ["16"])[0])
+            quant = _parse_quant(query.get("quant", ["qat"])[0])
+            models, stack_info = _models_from_query(query, base_url=base_url, source=source)
+            stack = list(stack_info.get("resolved_models") or models)
             _json_response(
                 self,
                 _guide_payload(
@@ -256,6 +312,8 @@ class DemoHandler(BaseHTTPRequestHandler):
                     base_url=base_url,
                     source=source,
                     models_dir=self.models_dir,
+                    vram_gb=vram_gb,
+                    quant=quant,
                 ),
             )
             return
@@ -301,11 +359,19 @@ class DemoHandler(BaseHTTPRequestHandler):
             _json_response(self, {"ready": False, "error": "prompt is required"}, status=400)
             return
 
-        models = _parse_models(body.get("models"))
+        base_url = body.get("base_url") or self.base_url
+        source = body.get("source") or "both"
+        models_raw = body.get("models")
+        if models_raw:
+            models = _parse_models(models_raw if isinstance(models_raw, str) else ",".join(models_raw))
+        else:
+            vram_gb = _parse_vram(str(body.get("vram_gb", 16)))
+            quant = _parse_quant(body.get("quant"))
+            stack_info = stack_payload(vram_gb=vram_gb, quant=quant, base_url=base_url, source=source)
+            models = list(stack_info.get("resolved_models") or stack_info.get("models") or DEFAULT_POC_STACK)
         hint = body.get("hint") or None
         if hint == "":
             hint = None
-        base_url = body.get("base_url") or self.base_url
         _json_response(
             self,
             _route_payload(prompt=prompt, models=models, hint=hint, base_url=base_url),
