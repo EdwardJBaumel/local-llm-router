@@ -23,6 +23,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+$Scripts = Join-Path $Root "scripts"
+. (Join-Path $Scripts "_pip-helpers.ps1")
 Set-Location $Root
 
 if (-not $env:TWINE_USERNAME) {
@@ -57,7 +59,8 @@ Wrong (will fail):
 function Invoke-Build {
     if ($SkipBuild) { return }
     Write-Host "==> pytest" -ForegroundColor Cyan
-    python -m pytest -q
+    & (Join-Path $Scripts "fix-publish-env.ps1")
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     Write-Host "==> clean + build" -ForegroundColor Cyan
     foreach ($dir in @("dist", "build")) {
         if (Test-Path $dir) { Remove-Item -Recurse -Force $dir }

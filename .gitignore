@@ -13,6 +13,7 @@ build/
 .env
 .env.*
 .pypirc
+scripts/publish-secrets.ps1
 *.pem
 *.key
 
