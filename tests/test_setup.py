@@ -35,7 +35,7 @@ def test_run_setup_pulls_and_writes_config(_mock_discover, mock_pull, tmp_path):
         interactive=False,
     )
     assert result.ready
-    assert mock_pull.call_count == 2
+    assert mock_pull.call_count == 3
     assert config.is_file()
     assert '"deployment_profile": "workstation_8gb"' in config.read_text(encoding="utf-8")
 

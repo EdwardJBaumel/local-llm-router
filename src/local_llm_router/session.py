@@ -175,6 +175,7 @@ def configure(
                     tier_map.simple,
                     tier_map.medium,
                     tier_map.complex,
+                    tier_map.complex_alt,
                     tier_map.reasoning,
                     tier_map.code,
                 )
@@ -185,7 +186,12 @@ def configure(
                     f"tiers= references models not in models=: {', '.join(sorted(set(unknown)))}"
                 )
     else:
-        tier_map = assign_tiers(resolved_models)
+        if models is None:
+            from local_llm_router.presets import assign_recommended_tiers
+
+            tier_map = assign_recommended_tiers(profile, quant=quant_mode)
+        else:
+            tier_map = assign_tiers(resolved_models)
     warnings = tuple(validate_tier_map(tier_map, resolved_models, profile=profile))
     _session = Session(
         profile=profile,

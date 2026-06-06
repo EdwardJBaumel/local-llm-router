@@ -70,6 +70,18 @@ response = your_client.generate(model=model, prompt=prompt)
 
 Omit `hint` only for demos — local-llm-router guesses from keywords (less reliable in production).
 
+**Agent vs chat on the same complex tier (v0.4.2+):** presets for 16/24/32 GB set `complex` (heavy, agent) and `complex_alt` (lighter, chat). Pass `mode=` on every call — keep it stable per session to avoid Ollama model swaps:
+
+```python
+# Agent loop
+tier, model = local_llm_router.route(prompt, hint=step.hint, mode="agent")
+
+# Chat UI
+tier, model = local_llm_router.route(prompt, hint=hint, mode="chat")
+```
+
+`mode="agent"` → `complex`; `mode="chat"` → `complex_alt` when configured.
+
 ---
 
 ## Not sure about the outcome?

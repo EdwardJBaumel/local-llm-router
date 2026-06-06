@@ -11,6 +11,39 @@ from local_llm_router.models import ComplexityTier, RouteDecision, StepKind, Tie
 from local_llm_router.tiering import describe_tiers
 
 
+def _use_complex_primary(
+    *,
+    mode: str | None,
+    hint: str | None,
+    step_kind: StepKind | None,
+) -> bool:
+    """Agent-style work uses ``complex``; chat-style uses ``complex_alt`` when set."""
+    if mode == "chat":
+        return False
+    if mode == "agent":
+        return True
+    if step_kind in (StepKind.DESIGN, StepKind.CODE, StepKind.BUILD):
+        return True
+    if hint in ("design", "code", "build"):
+        return True
+    return True
+
+
+def _pick_tier_model(
+    tier: ComplexityTier,
+    tiers: TierMap,
+    *,
+    mode: str | None,
+    hint: str | None,
+    step_kind: StepKind | None,
+) -> tuple[str, str]:
+    if tier == ComplexityTier.COMPLEX and tiers.complex_alt:
+        if _use_complex_primary(mode=mode, hint=hint, step_kind=step_kind):
+            return tiers.complex, "complex_primary"
+        return tiers.complex_alt, "complex_alt"
+    return tiers.for_tier(tier), "tier_slot"
+
+
 def route_prompt(
     prompt: str,
     tiers: TierMap,
@@ -69,16 +102,24 @@ def explain_route(
         else:
             reasons.append(f"code specialist {model} (prompt looks like code)")
     elif use_code and not tiers.code:
-        model = tiers.for_tier(tier)
-        model_source = "tier_slot"
+        model, model_source = _pick_tier_model(
+            tier, tiers, mode=mode, hint=raw_hint, step_kind=step_kind
+        )
         reasons.append(
             f"code-like prompt but no code slot — using {tier.value} model {model}"
         )
     else:
-        model = tiers.for_tier(tier)
-        model_source = "tier_slot"
+        model, model_source = _pick_tier_model(
+            tier, tiers, mode=mode, hint=raw_hint, step_kind=step_kind
+        )
         slot_name = tier.value
-        if tier == ComplexityTier.REASONING and tiers.reasoning == tiers.complex:
+        if model_source == "complex_primary":
+            reasons.append(
+                f"complex slot → {model} (mode=agent or design/code hint)"
+            )
+        elif model_source == "complex_alt":
+            reasons.append(f"complex_alt slot → {model} (mode=chat)")
+        elif tier == ComplexityTier.REASONING and tiers.reasoning == tiers.complex:
             reasons.append(
                 f"reasoning tier → {model} (no separate reasoning model; complex fallback)"
             )

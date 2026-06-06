@@ -6,10 +6,22 @@ from local_llm_router.stack_health import ModelTagInfo, check_stack_health, form
 
 def test_check_stack_health_all_present():
     inventory = ModelInventory(
-        api_models=("gemma4:e4b", "qwen3:8b", "qwen3:14b", "deepseek-r1:8b"),
-        disk_models=("gemma4:e4b", "qwen3:8b", "qwen3:14b", "deepseek-r1:8b"),
+        api_models=(
+            "gemma4:e4b",
+            "qwen3.5:9b",
+            "qwen3:14b",
+            "qwen2.5-coder:7b",
+            "deepseek-r1:8b",
+        ),
+        disk_models=(
+            "gemma4:e4b",
+            "qwen3.5:9b",
+            "qwen3:14b",
+            "qwen2.5-coder:7b",
+            "deepseek-r1:8b",
+        ),
         manifest_roots=("/models",),
-        suggested_stack=("gemma4:e4b", "qwen3:8b", "qwen3:14b"),
+        suggested_stack=("gemma4:e4b", "qwen3.5:9b", "qwen3:14b"),
         note=None,
     )
     with patch("local_llm_router.stack_health.list_model_inventory", return_value=inventory):

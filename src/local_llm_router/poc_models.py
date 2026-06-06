@@ -9,7 +9,7 @@ from local_llm_router.presets import RECOMMENDED_STACKS, recommended_models
 from local_llm_router.quantization import QAT_STACK_ADDITIONS, normalize_quant_mode
 from local_llm_router.session import profile_for_vram_gb
 
-DEFAULT_POC_STACK = ["gemma4:e4b", "qwen3:8b", "qwen3:14b"]
+DEFAULT_POC_STACK = ["gemma4:e4b", "qwen3.5:9b", "qwen3:14b"]
 
 VRAM_OPTIONS: tuple[tuple[int, str], ...] = (
     (8, "8 GB"),

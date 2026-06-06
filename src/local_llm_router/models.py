@@ -34,6 +34,7 @@ class TierMap:
     complex: str
     reasoning: str
     code: str | None = None
+    complex_alt: str | None = None
 
     def for_tier(self, tier: ComplexityTier) -> str:
         lookup = {

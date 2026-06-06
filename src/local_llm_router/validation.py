@@ -40,6 +40,8 @@ def validate_tier_map(
         tiers.complex,
         tiers.reasoning,
     }
+    if tiers.complex_alt:
+        slot_models.add(tiers.complex_alt)
     if tiers.code:
         slot_models.add(tiers.code)
     unique_slots = len(slot_models)

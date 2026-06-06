@@ -52,7 +52,7 @@ from local_llm_router.startup_tips import emit_import_tips, model_recommendation
 from local_llm_router.tiering import assign_tiers, describe_tiers
 from local_llm_router.validation import validate_tier_map
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 
 __all__ = [
     "ComplexityTier",

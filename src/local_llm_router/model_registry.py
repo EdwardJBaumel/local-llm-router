@@ -93,6 +93,12 @@ _BUILTIN_RAW: list[dict[str, object]] = [
     {"match": "deepseek-coder", "weight": 7000, "vram_gb": 6, "family": "deepseek"},
     {"match": "codellama", "weight": 7000, "vram_gb": 6, "family": "llama"},
     {"match": "starcoder2", "weight": 7000, "vram_gb": 6, "family": "starcoder"},
+    {"match": "qwen3.5:9b", "weight": 9000, "vram_gb": 7, "family": "qwen"},
+    {"match": "qwen3.6:27b", "weight": 27000, "vram_gb": 17, "family": "qwen"},
+    {"match": "qwen3.6:35b-a3b", "weight": 35000, "vram_gb": 22, "family": "qwen"},
+    {"match": "qwen2.5-coder:14b", "weight": 14000, "vram_gb": 10, "family": "qwen"},
+    {"match": "qwen2.5-coder:7b", "weight": 7000, "vram_gb": 6, "family": "qwen"},
+    {"match": "devstral-small", "weight": 24000, "vram_gb": 16, "family": "mistral"},
     {"match": ":e4b", "weight": 4000, "vram_gb": 4, "family": "gemma"},
     {"match": ":e2b", "weight": 2000, "vram_gb": 3, "family": "gemma"},
 ]

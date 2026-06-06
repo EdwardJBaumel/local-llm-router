@@ -19,7 +19,7 @@ def test_legacy_work_build_aliases():
 def test_default_poc_preset_uses_gemma_and_qwen():
     models = models_for_preset("mixed_12gb")
     assert models[0].startswith("gemma")
-    assert "qwen3:8b" in models
+    assert "qwen3.5:9b" in models
     assert "qwen3:14b" in models
 
 
@@ -37,10 +37,11 @@ def test_recommended_stack_for_vram_16gb_qat_adds_gemma26():
     assert len(stack.models) > len(recommended_stack_for_vram(12, quant="qat").models)
 
 
-def test_recommended_stack_16gb_is_superset_of_12gb():
-    base_12 = set(recommended_stack_for_vram(12, quant="default").models)
-    base_16 = set(recommended_stack_for_vram(16, quant="default").models)
-    assert base_12 <= base_16
+def test_recommended_stack_16gb_extends_12gb_spine():
+    s12 = set(recommended_stack_for_vram(12, quant="default").models)
+    s16 = set(recommended_stack_for_vram(16, quant="default").models)
+    assert {"gemma4:e4b", "deepseek-r1:8b", "qwen3:14b"} <= s12
+    assert {"gemma4:e4b", "deepseek-r1:8b", "qwen3.6:35b-a3b"} <= s16
 
 
 def test_stack_payload_vram_quant_keys():

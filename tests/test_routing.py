@@ -90,3 +90,29 @@ def test_explain_includes_mode_in_reasons():
     assert decision.mode == "chat"
     assert any("mode=chat" in reason for reason in decision.reasons)
 
+
+def test_complex_alt_uses_primary_in_agent_mode():
+    tiers = TierMap(
+        simple="gemma4:e4b",
+        medium="qwen3.5:9b",
+        complex="qwen3.6:35b-a3b",
+        complex_alt="qwen3:14b",
+        reasoning="deepseek-r1:8b",
+    )
+    tier, model = route_prompt("design the auth architecture", tiers, hint="design", mode="agent")
+    assert tier == ComplexityTier.COMPLEX
+    assert model == "qwen3.6:35b-a3b"
+
+
+def test_complex_alt_uses_alt_in_chat_mode():
+    tiers = TierMap(
+        simple="gemma4:e4b",
+        medium="qwen3.5:9b",
+        complex="qwen3.6:35b-a3b",
+        complex_alt="qwen3:14b",
+        reasoning="deepseek-r1:8b",
+    )
+    tier, model = route_prompt("design the auth architecture", tiers, hint="design", mode="chat")
+    assert tier == ComplexityTier.COMPLEX
+    assert model == "qwen3:14b"
+

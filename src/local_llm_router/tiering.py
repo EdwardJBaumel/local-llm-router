@@ -61,6 +61,7 @@ def describe_tiers(tiers: TierMap) -> dict[str, str | None]:
         "simple": tiers.simple,
         "medium": tiers.medium,
         "complex": tiers.complex,
+        "complex_alt": tiers.complex_alt,
         "reasoning": tiers.reasoning,
         "code": tiers.code,
     }
