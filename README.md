@@ -51,6 +51,8 @@ llm-router doctor --check-stack --vram-gb 16 --quant qat
 | **`assign_tiers` / `route_prompt`** | Same routing with your own tier map |
 | **`llm-router compare` / `stack benchmark`** | CLI evidence — dry by default |
 
+Empirical Ollama picks (16 GB workstation): [`docs/benchmark-evidence.md`](docs/benchmark-evidence.md) · re-run [`scripts/ollama_benchmark/`](scripts/ollama_benchmark/).
+
 Step hints: `lookup`, `explain`, `design`, `code`, `reason` — override keyword scoring when you know the agent phase.
 
 ## VRAM and quant
@@ -92,8 +94,4 @@ pytest
 llm-router setup --profile 12gb --dry-run
 ```
 
-Docs: [`docs/publishing.md`](docs/publishing.md) · [`docs/security.md`](docs/security.md) · [`docs/backlog.md`](docs/backlog.md)
-
-## Related
-
-[Local Recruiting Ops](https://github.com/edwardjbaumel/local-recruiting-ops) — separate project by the same author; local-llm-router does not depend on it.
+Docs: [`docs/publishing.md`](docs/publishing.md) · [`docs/benchmark-evidence.md`](docs/benchmark-evidence.md) · [`docs/security.md`](docs/security.md) · [`docs/backlog.md`](docs/backlog.md)

@@ -1,0 +1,7 @@
+{
+  "date": "2026-06-05",
+  "gpu": "NVIDIA GeForce RTX 5070 Ti (16 GB)",
+  "note": "Latency outliers stripped where a concurrent local LLM load inflated one run per stage. Second full re-run discarded (gemma4:31b resident in VRAM). Source: scripts/_benchmark_first_run.json via sanitize_benchmark.py",
+  "stages": ["parse", "analyze", "digest", "cover"],
+  "models": ["qwen3:8b", "qwen3:14b", "gemma4:e4b", "deepseek-r1:8b", "gemma4:12b"]
+}

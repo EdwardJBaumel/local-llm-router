@@ -169,6 +169,7 @@ Sources: [Google Q4_0 collection](https://huggingface.co/collections/google/gemm
 
 ## See also
 
+- [`benchmark-evidence.md`](benchmark-evidence.md) — measured Ollama picks on 16 GB (JSON vs prose vs reasoning)
 - [`../config/models.example.json`](../config/models.example.json) — full template
 - [`datacenter.md`](datacenter.md) — fleet / dual-GPU
 - [`../examples/quickstart/README.md`](../examples/quickstart/README.md) — hands-on tour
